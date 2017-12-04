@@ -1,0 +1,1 @@
+web: gunicorn qsc_school_bus_tracker_project.wsgi
