@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+
+<h4 class="card-title">Report</h4>
+
+<div class="card text-center">
+  <div class="card-header">
+    Total Calories
+  </div>
+  <div class="card-body">
+    <h4 class="card-title">{{total_calories}}</h4>
+  </div>
+</div>
+</br>
+<div class="card text-center">
+  <div class="card-header">
+    Total Fat
+  </div>
+  <div class="card-body">
+    <h4 class="card-title">{{total_fat}}</h4>
+  </div>
+</div>
+</br>
+<div class="card text-center">
+  <div class="card-header">
+    Total Fibre
+  </div>
+  <div class="card-body">
+    <h4 class="card-title">{{total_fibre}}</h4>
+  </div>
+</div>
+</br>
+<div class="card text-center">
+  <div class="card-header">
+    Total Sugar
+  </div>
+  <div class="card-body">
+    <h4 class="card-title">{{total_sugar}}</h4>
+  </div>
+</div>
+</br>
+<div class="card text-center">
+  <div class="card-header">
+    Total Protein
+  </div>
+  <div class="card-body">
+    <h4 class="card-title">{{total_protein}}</h4>
+  </div>
+</div>
+
+</br></br>
+<a href='/home/' class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Home</a>
+
+{% endblock %}

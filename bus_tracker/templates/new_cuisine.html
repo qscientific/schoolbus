@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+	
+	<h4 class="card-title">Cuisine Name:</h4>
+	<input id="cuisine_name_val" type="text" class="form-control" name="cuisine_name">
+	</br></br>
+	<a id="add_new_cuisine" class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Add</a>
+
+	</br></br>
+	<a href='/home/' class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Home</a>
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+
+			$( "#add_new_cuisine" ).click(function() {
+			  $.post( "/new_cuisine/", {'cuisine_name': $('#cuisine_name_val').val()}, function( data ) {
+			  	  console.log(data);
+				  if('success' in data && data['success']){
+				  	window.location.replace("/food_database/");
+				  }
+				});
+			});
+		});
+
+	</script>
+
+{% endblock %}

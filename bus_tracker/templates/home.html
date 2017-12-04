@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+
+<!-- <a href='/settings/'>Settings</a>
+<a href='/account/'>Account</a>
+<a href='/report/'>Report</a>
+<a href='/food_database/'>Food Database</a>
+<a href='/logout/'>Logout</a> -->
+
+<h4 class="card-title">Home</h4>
+<!-- <a class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Settings</a>
+<a class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Account</a> -->
+<a href='/report/' class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Report</a>
+<a href='/food_database/' class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Food Database</a>
+<a href='/logout/' class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Logout</a>
+
+{% endblock %}

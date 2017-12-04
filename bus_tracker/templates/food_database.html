@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+  <h3>Food Database</h3>
+  </br></br>
+  <label for="cuisine_select">Select Cuisine:</label>
+  <select id="cuisine_select" class="form-control" >
+  {% for cuisine in cuisines %}
+    <option value="{{cuisine.id}}">{{cuisine.name}}</option>
+  {% endfor %}
+  	<option value="ADD NEW CUISINE">ADD NEW CUISINE</option>
+  </select>
+
+  </br></br>
+
+	<label for="partition_1">Partition 1</label>
+  	<select id="partition_1" class="form-control partitions" >
+  		<option value="-1">EMPTY</option>
+  		<option value="ADD NEW FOOD">ADD NEW FOOD</option>
+  	</select>
+
+  	<label for="partition_2">Partition 2</label>
+  	<select id="partition_2" class="form-control partitions" >
+  		<option value="-1">EMPTY</option>
+  		<option value="ADD NEW FOOD">ADD NEW FOOD</option>
+  	</select>
+
+  	<label for="partition_3">Partition 3</label>
+  	<select id="partition_3" class="form-control partitions" >
+  		<option value="-1">EMPTY</option>
+  		<option value="ADD NEW FOOD">ADD NEW FOOD</option>
+  	</select>
+
+  	<label for="partition_4">Partition 4</label>
+  	<select id="partition_4" class="form-control partitions" >
+  		<option value="-1">EMPTY</option>
+  		<option value="ADD NEW FOOD">ADD NEW FOOD</option>
+  	</select>
+
+  </br></br>
+
+<!--   <a href="/new_cuisine/">Add Personal Cuisine</a> -->
+<a id="submit_plate" class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Submit</a>
+</br></br>
+<a href='/home/' class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Home</a>
+
+<script type="text/javascript">
+	$(document).ready(function() { 
+
+		var cuisine_change = function() {
+		  console.log($("#cuisine_select").val());
+		  cuisine_select_val = $("#cuisine_select").val();
+		  if(cuisine_select_val=="ADD NEW CUISINE"){
+		  	window.location.replace("/new_cuisine/");
+		  }
+		  else{
+		  	$.post( "/select_cuisine/", {'cuisine_id': cuisine_select_val}, function( data ) {
+		  	  console.log(data);
+			  if('success' in data && data['success']){
+			  	if('foods' in data){
+			  		$(".partitions").empty();
+			  		var res = '<option value="-1">EMPTY</option><option value="ADD NEW FOOD">ADD NEW FOOD</option>'
+			  		for(var i=0; i < data['foods'].length; i++){
+			  			res = res + "<option class='food' value=" + data['foods'][i]['id'] + ">" + data['foods'][i]['name'] + "</option>"
+			  		}
+			  		$(".partitions").append(res);
+			  	}
+			  }
+			});
+		  }
+		}
+
+		cuisine_change();
+		
+		$( "#cuisine_select" ).change(cuisine_change);
+
+		$( ".partitions" ).change(function() {
+			$(this).removeClass("partitions");
+			partition_val = $(this).val();
+			if(partition_val=="ADD NEW FOOD"){
+				window.location.replace("/new_food/?cuisine_val=" + $("#cuisine_select").val());
+			}
+		});
+
+		$( "#submit_plate" ).click(function() {
+			var data = {
+				'part_1': $('#partition_1').val(),
+				'part_2': $('#partition_2').val(),
+				'part_3': $('#partition_3').val(),
+				'part_4': $('#partition_4').val(),
+			}
+			$.post( "/food_database/", data, function( data ) {
+		  	  console.log(data);
+			  if('success' in data && data['success']){
+			  	window.location.replace("/report/");
+			  }
+			});
+
+		});
+	});
+
+</script>
+    
+{% endblock %}
+

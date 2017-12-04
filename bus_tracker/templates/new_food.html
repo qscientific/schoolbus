@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+	
+	<h4 class="card-title">New Food</h4>
+	</br></br>
+	<label for="food_name_val">food name:</label>
+	<input id="food_name_val" type="text" class="form-control" name="food_name">
+	</br></br>
+	<label for="calories_val">calories:</label>
+	<input id="calories_val" type="number" min="0" class="form-control" name="calories">
+	</br></br>
+	<label for="fat_val">fat:</label>
+	<input id="fat_val" type="number" min="0" class="form-control" name="fat">
+	</br></br>
+	<label for="fibre_val">fibre:</label>
+	<input id="fibre_val" type="number" min="0" class="form-control" name="fibre">
+	</br></br>
+	<label for="protein_val">protein:</label>
+	<input id="protein_val" type="number" min="0" class="form-control" name="protein">
+	</br></br>
+	<label for="sugar_val">sugar:</label>
+	<input id="sugar_val" type="number" min="0" class="form-control" name="sugar">
+	</br></br>
+
+	<a id="add_new_food" class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Add</a>
+	</br></br>
+	<a href='/home/' class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Home</a>
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+
+			$.urlParam = function(name){
+				var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+				return results[1] || 0;
+			}
+
+			$( "#add_new_food" ).click(function() {
+			  data = {'food_name': $('#food_name_val').val(),
+			  		  'calories': $('#calories_val').val(),
+			  		  'fat': $('#fat_val').val(),
+			  		  'fibre': $('#fibre_val').val(),
+			  		  'protein': $('#protein_val').val(),
+			  		  'sugar': $('#sugar_val').val(),
+			  		  'cuisine_id': $.urlParam('cuisine_val')}
+			  $.post( "/new_food/", data, function( data ) {
+			  	  console.log(data);
+				  if('success' in data && data['success']){
+				  	window.location.replace("/food_database/");
+				  }
+				});
+			});
+		});
+
+	</script>
+
+{% endblock %}
