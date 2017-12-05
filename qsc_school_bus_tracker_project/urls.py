@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^login/$', auth_views.login, {'template_name': 'login.html'}, name='login'),
     url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
     url(r'^home/$', bus_tracker_views.home, name='home'),
+    url(r'^load_locations/$', bus_tracker_views.load_locations, name='load_locations'),
 
 
     #index page

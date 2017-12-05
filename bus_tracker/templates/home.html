@@ -28,7 +28,7 @@
 
 <div class="card-img-top" id="map"></div>
 <div class="card-body">
-	<ul class="list-group">
+	<ul id="students" class="list-group">
 		<li class="list-group-item">
 			<div class="col-xs-9">
 				Student A 
@@ -58,63 +58,95 @@
 
 
 <script type="text/javascript">
+	var locations = [];
+
+	
+
 	var geocoder;
-var map;
-var directionsDisplay;
-var directionsService = new google.maps.DirectionsService();
-var locations = [
-  ['Maroubra Beach', 25.315695, 51.444253, 1],
-  ['Manly Beach', 25.317709, 51.473252, 2],
-  ['Cronulla Beach', 25.288843, 51.485483, 3],
-  ['Bondi Beach', 25.264938, 51.464412, 4],
-];
+	var map;
+	var directionsDisplay;
+	var directionsService = new google.maps.DirectionsService();
+	var locations = [
+	  ['Maroubra Beach', 25.315695, 51.444253, 1],
+	  ['Manly Beach', 25.317709, 51.473252, 2],
+	  ['Cronulla Beach', 25.288843, 51.485483, 3],
+	  ['Bondi Beach', 25.264938, 51.464412, 4],
+	];
 
-function initialize() {
-  directionsDisplay = new google.maps.DirectionsRenderer();
+	function initialize() {
+	  
+	  directionsDisplay = new google.maps.DirectionsRenderer();
 
 
-  var map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 10,
-    center: new google.maps.LatLng(25.293369, 51.487253),
-    mapTypeId: google.maps.MapTypeId.ROADMAP
-  });
-  directionsDisplay.setMap(map);
-  var infowindow = new google.maps.InfoWindow();
+	  var map = new google.maps.Map(document.getElementById('map'), {
+	    zoom: 10,
+	    center: new google.maps.LatLng(25.293369, 51.487253),
+	    mapTypeId: google.maps.MapTypeId.ROADMAP
+	  });
+	  directionsDisplay.setMap(map);
+	  var infowindow = new google.maps.InfoWindow();
 
-  var marker, i;
-  var request = {
-    travelMode: google.maps.TravelMode.DRIVING
-  };
-  for (i = 0; i < locations.length; i++) {
-    marker = new google.maps.Marker({
-      position: new google.maps.LatLng(locations[i][1], locations[i][2]),
-    });
+	  var marker, i;
+	  var request = {
+	    travelMode: google.maps.TravelMode.DRIVING
+	  };
+	  for (i = 0; i < locations.length; i++) {
+	    marker = new google.maps.Marker({
+	      position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+	    });
 
-    google.maps.event.addListener(marker, 'click', (function(marker, i) {
-      return function() {
-        infowindow.setContent(locations[i][0]);
-        infowindow.open(map, marker);
-      }
-    })(marker, i));
+	    google.maps.event.addListener(marker, 'click', (function(marker, i) {
+	      return function() {
+	        infowindow.setContent(locations[i][0]);
+	        infowindow.open(map, marker);
+	      }
+	    })(marker, i));
 
-    if (i == 0) request.origin = marker.getPosition();
-    else if (i == locations.length - 1) request.destination = marker.getPosition();
-    else {
-      if (!request.waypoints) request.waypoints = [];
-      request.waypoints.push({
-        location: marker.getPosition(),
-        stopover: true
-      });
-    }
+	    if (i == 0) request.origin = marker.getPosition();
+	    else if (i == locations.length - 1) request.destination = marker.getPosition();
+	    else {
+	      if (!request.waypoints) request.waypoints = [];
+	      request.waypoints.push({
+	        location: marker.getPosition(),
+	        stopover: true
+	      });
+	    }
 
-  }
-  directionsService.route(request, function(result, status) {
-    if (status == google.maps.DirectionsStatus.OK) {
-      directionsDisplay.setDirections(result);
-    }
-  });
-}
-google.maps.event.addDomListener(window, "load", initialize);
+	  }
+	  directionsService.route(request, function(result, status) {
+	    if (status == google.maps.DirectionsStatus.OK) {
+	      directionsDisplay.setDirections(result);
+	    }
+	  });
+	}
+
+	function load_locations(){
+		$.post( "/load_locations/", {}, function( data ) {
+			  	  console.log(data);
+				  if('success' in data && data['success']){
+				  	locations = data['locations'];
+				  	google.maps.event.addDomListener(window, "load", initialize);
+				  	$("#students").empty();
+				  	var i;
+				  	for(i=1; i < data['locations'].length; i++){
+				  		res = '<li class="list-group-item">\n';
+						res += '<div class="col-xs-9">\n'
+						res += data['locations'][i][0]
+						res += '</div>\n'
+						res += '<div class="col-xs-3">\n'
+						res += '<button type="button" class="btn btn-outline-primary btn-sm" data-toggle="button" aria-pressed="false" autocomplete="off"> Picked </button>\n'
+						res += '</div>\n'
+						res += '</li>\n'
+				  		$("#students").append(res);
+				  	}
+				  }
+				});
+	}
+
+	load_locations();
+
+
+	
 </script>
 
 {% endblock %}

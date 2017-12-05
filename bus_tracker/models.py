@@ -31,6 +31,8 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     user_type = models.CharField(max_length=1, choices=USER_TYPE_OPTIONS, 
                                       default=UNKNOWN_TYPE)
+    geo_long = models.FloatField(blank=True, null=True)
+    geo_lat = models.FloatField(blank=True, null=True)
 
 
 @receiver(post_save, sender=User)
