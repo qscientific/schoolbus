@@ -15,7 +15,17 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
+from bus_tracker import views as bus_tracker_views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^signup/$', bus_tracker_views.signup, name='signup'),
+    url(r'^login/$', auth_views.login, {'template_name': 'login.html'}, name='login'),
+    url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
+    url(r'^home/$', bus_tracker_views.home, name='home'),
+
+
+    #index page
+    url(r'^', bus_tracker_views.index, name='index'),
 ]

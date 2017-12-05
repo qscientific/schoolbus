@@ -1,22 +1,29 @@
 {% extends 'base.html' %}
+{% load staticfiles %}
 
 {% block content %}
 
-  <form method="post">
-    {% csrf_token %}
-    {% for field in form %}
-      <p>
-        {{ field.label_tag }}<br>
-        {{ field }}
-        <!-- {% if field.help_text %}
-          <small style="color: grey">{{ field.help_text }}</small>
-        {% endif %} -->
-        {% for error in field.errors %}
-          <p style="color: red">{{ error }}</p>
-        {% endfor %}
-      </p>
-    {% endfor %}
-    <!-- <button type="submit">Sign up</button> -->
-    <button type="submit" class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Sign Up</button>
-  </form>
+  <img class="card-img-top" style="padding:10px; background-color: rgba(0, 0, 0, 0.0);" src='{% static "bus_tracker/logo3.png" %}' alt="Card image cap">
+  <div class="card-body" style="width: 100vw">
+    <h4 class="card-title">Sign Up Form</h4>
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+        <p>
+          {{ field.label_tag }}<br>
+          {{ field }}
+          <!-- {% if field.help_text %}
+            <small style="color: grey">{{ field.help_text }}</small>
+          {% endif %} -->
+          {% for error in field.errors %}
+            <p style="color: red">{{ error }}</p>
+          {% endfor %}
+        </p>
+      {% endfor %}
+      <!-- <button type="submit">Sign up</button> -->
+      <button type="submit" class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Sign Up</button>
+    </form>
+  </div>
+
+  
 {% endblock %}

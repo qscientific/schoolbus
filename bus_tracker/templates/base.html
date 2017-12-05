@@ -68,15 +68,15 @@
       height:100%;
     }
     body {
-      background-color: #31D1BE;
+      background-color: #2E5090;
       display:flex;
       align-items:center;
     }
 
-/*    #main_container{
-      padding: 20px;
-      margin: 20px;
-    }*/
+    #main_container{
+      padding: 0px;
+      margin: 0px;
+    }
 
 
 
@@ -86,17 +86,12 @@
   </head>
   <body>
     
-    <div class="row text-center"><div class="col-xs-12">
+    <div id="main_container" class="row text-center"><div class="col-xs-12">
       
     
-    <div id="main_container" class="card">
-      <img class="card-img-top" src='{% static "bus_tracker/logo.png" %}' alt="Card image cap">
-      <div class="card-body">
-        
-        <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
-        {% block content %}{% endblock %}
-        <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
-      </div>
+    <div class="card">
+      {% block content %}{% endblock %}
+
     </div>
 
     </div></div>

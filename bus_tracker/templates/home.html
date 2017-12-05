@@ -8,12 +8,94 @@
 <a href='/report/'>Report</a>
 <a href='/food_database/'>Food Database</a>
 <a href='/logout/'>Logout</a> -->
+<style type="text/css">
+	#map {
+	  height: 500px;
+	  width: 100vw;
+	  margin: 0px;
+	  padding: 0px
+	}
+</style>
 
-<h4 class="card-title">Home</h4>
 <!-- <a class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Settings</a>
 <a class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Account</a> -->
-<a href='/report/' class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Report</a>
-<a href='/food_database/' class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Food Database</a>
+<!-- <a href='/report/' class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Report</a>
+<a href='/food_database/' class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Food Database</a> -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBpRIKS8QnytnGPopeZi3xgbz-bwNau4S0"></script>
+
+
+<div class="card-img-top" id="map"></div>
+<div class="card-body">
+	<h4 class="card-title">Home</h4>
+</div>
+
+
+
+
+
 <a href='/logout/' class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Logout</a>
+
+
+
+
+<script type="text/javascript">
+	var geocoder;
+var map;
+var directionsDisplay;
+var directionsService = new google.maps.DirectionsService();
+var locations = [
+  ['Maroubra Beach', 25.315695, 51.444253, 1],
+  ['Manly Beach', 25.317709, 51.473252, 2],
+  ['Cronulla Beach', 25.288843, 51.485483, 3],
+  ['Bondi Beach', 25.264938, 51.464412, 4],
+];
+
+function initialize() {
+  directionsDisplay = new google.maps.DirectionsRenderer();
+
+
+  var map = new google.maps.Map(document.getElementById('map'), {
+    zoom: 10,
+    center: new google.maps.LatLng(25.293369, 51.487253),
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  });
+  directionsDisplay.setMap(map);
+  var infowindow = new google.maps.InfoWindow();
+
+  var marker, i;
+  var request = {
+    travelMode: google.maps.TravelMode.DRIVING
+  };
+  for (i = 0; i < locations.length; i++) {
+    marker = new google.maps.Marker({
+      position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+    });
+
+    google.maps.event.addListener(marker, 'click', (function(marker, i) {
+      return function() {
+        infowindow.setContent(locations[i][0]);
+        infowindow.open(map, marker);
+      }
+    })(marker, i));
+
+    if (i == 0) request.origin = marker.getPosition();
+    else if (i == locations.length - 1) request.destination = marker.getPosition();
+    else {
+      if (!request.waypoints) request.waypoints = [];
+      request.waypoints.push({
+        location: marker.getPosition(),
+        stopover: true
+      });
+    }
+
+  }
+  directionsService.route(request, function(result, status) {
+    if (status == google.maps.DirectionsStatus.OK) {
+      directionsDisplay.setDirections(result);
+    }
+  });
+}
+google.maps.event.addDomListener(window, "load", initialize);
+</script>
 
 {% endblock %}
