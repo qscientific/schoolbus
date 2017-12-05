@@ -130,15 +130,17 @@
 				  	$("#students").empty();
 				  	var i;
 				  	for(i=1; i < data['locations'].length; i++){
-				  		res = '<li class="list-group-item">\n';
-						res += '<div class="col-xs-9">\n'
-						res += data['locations'][i][0]
-						res += '</div>\n'
-						res += '<div class="col-xs-3">\n'
-						res += '<button type="button" class="btn btn-outline-primary btn-sm" data-toggle="button" aria-pressed="false" autocomplete="off"> Picked </button>\n'
-						res += '</div>\n'
-						res += '</li>\n'
-				  		$("#students").append(res);
+				  		if(data['locations'][i][0] != 'school'){
+				  			res = '<li class="list-group-item">\n';
+							res += '<div class="col-xs-9">\n'
+							res += data['locations'][i][0]
+							res += '</div>\n'
+							res += '<div class="col-xs-3">\n'
+							res += '<button type="button" class="btn btn-outline-primary btn-sm" data-toggle="button" aria-pressed="false" autocomplete="off"> Picked </button>\n'
+							res += '</div>\n'
+							res += '</li>\n'
+					  		$("#students").append(res);
+				  		}
 				  	}
 				  }
 				});

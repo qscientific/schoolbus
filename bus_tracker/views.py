@@ -50,4 +50,9 @@ def load_locations(request):
 		all_students = list(User.objects.filter(profile__user_type=Profile.STUDENT_TYPE))
 		all_locations = map(lambda (i, x): [x.username, x.profile.geo_lat, x.profile.geo_long, i + 2], enumerate(all_students))
 		all_locations.insert(0, driver_location)
+		try:
+			school = User.objects.get(profile__user_type=Profile.ADMIN_TYPE)
+			school_location = [school.username, school.profile.geo_lat, school.profile.geo_long, len(all_locations) + 1]
+			all_locations.append(school_location)
+		except: pass
 		return JsonResponse({'success': True, 'locations': all_locations})
