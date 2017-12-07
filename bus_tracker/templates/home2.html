@@ -27,13 +27,19 @@
 <div class="card-img-top" id="map"></div>
 <!-- <div class="card-body">
 	<div>Time left = <span id="timer"></span></div>
-	<ul  class="list-group">
-		
-	</ul>
+	<div id="info_and_control">
+		<div id="total_time"></div>
+		<div id="total_distance"></div>
+		<input type="checkbox" data-toggle="toggle" data-on="Going" data-off="Not Going" data-onstyle="success" data-offstyle="danger" data-size="large">
+	</div>
 </div> -->
-<ul id="students" class="list-group list-group-flush">
-
-</ul>
+<ul class="list-group list-group-flush">
+	<li class="list-group-item">Distance Remaining: <span id="total_distance"></span></li>
+    <li class="list-group-item">Time Remaining: <span id="total_time"></span></li>
+    <li class="list-group-item">
+    	<input type="checkbox" data-toggle="toggle" data-on="I'm going to school" data-off="I'm not going to school" data-onstyle="success" data-offstyle="danger" data-size="large">
+    </li>
+  </ul>
 
 
 
@@ -47,7 +53,7 @@
 <script type="text/javascript">
 
 	var locations = [];
-
+	var student_username = "{{student_username}}";
 	
 
 	var geocoder;
@@ -61,7 +67,6 @@
 	  ['Cronulla Beach', 25.288843, 51.485483, 3],
 	  ['Bondi Beach', 25.264938, 51.464412, 4],
 	];
-	var waypoint_order = [];
 
 	function initialize() {
 	  
@@ -83,62 +88,74 @@
 	    travelMode: google.maps.TravelMode.DRIVING,
 	    optimizeWaypoints:true
 	  };
+
+	  var found_cur_student = false;
 	  for (i = 0; i < locations.length; i++) {
 
 	  	if (i==0) var image = '{% static "bus_tracker/bus_icon3.png" %}';
-	  	else if (i == (locations.length-1) ) var image = '{% static "bus_tracker/school_icon.png" %}';
 	  	else var image = '{% static "bus_tracker/student_icon2.png" %}';
 
-	    marker = new google.maps.Marker({
+	  	// var image = {
+		  //   url: 'https://image.flaticon.com/icons/png/128/0/622.png',
+		  //   // This marker is 20 pixels wide by 32 pixels high.
+		  //   size: new google.maps.Size(20, 32),
+		  //   // The origin for this image is (0, 0).
+		  //   origin: new google.maps.Point(0, 0),
+		  //   // The anchor for this image is the base of the flagpole at (0, 32).
+		  //   anchor: new google.maps.Point(0, 32)
+		  // };
+
+	  	marker = new google.maps.Marker({
 	      position: new google.maps.LatLng(locations[i][1], locations[i][2]),
 	      icon: image
 	    });
 
-	    google.maps.event.addListener(marker, 'click', (function(marker, i) {
-	      return function() {
-	        infowindow.setContent(locations[i][0]);
-	        infowindow.open(map, marker);
-	      }
-	    })(marker, i));
-	    marker.setMap(map);
-
+	  	if((i == 0) || (locations[i][0] == student_username)){
+	  		google.maps.event.addListener(marker, 'click', (function(marker, i) {
+		      return function() {
+		        infowindow.setContent(locations[i][0]);
+		        infowindow.open(map, marker);
+		      }
+		    })(marker, i));
+		    marker.setMap(map);
+	  	}
+	    
 	    if (i == 0) request.origin = marker.getPosition();
-	    else if (i == locations.length - 1) request.destination = marker.getPosition();
-	    else {
-	      if (!request.waypoints) request.waypoints = [];
+	    else if (locations[i][0] == student_username){
+	    	found_cur_student = true;
+	    	request.destination = marker.getPosition();
+	    }
+	    else if (!found_cur_student){
+	    	if (!request.waypoints) request.waypoints = [];
 	      request.waypoints.push({
 	        location: marker.getPosition(),
 	        stopover: true
 	      });
 	    }
 
+
+
+	    
+	    // else if (i == locations.length - 1) request.destination = marker.getPosition();
+	    // else {
+	      
+	    // }
+
 	  }
 	  directionsService.route(request, function(result, status) {
 	    if (status == google.maps.DirectionsStatus.OK) {
 	      directionsDisplay.setDirections(result);
-	      console.log(result);
-	      waypoint_order = result['routes'][0]['waypoint_order'];
-	   //    console.log('ergbhregiuhwngujrwgwrgf');
-	   //    console.log(waypoint_order);
-		  // waypoint_order = waypoint_order.map(x => x+1);
-		  // waypoint_order.unshift(0);
-		  // waypoint_order.push(waypoint_order.length);
-		  // console.log("FUIHEIUHFEIFEF");
-		  // console.log(waypoint_order);
-		  var route = result['routes'][0]['legs'];
-		  var total_distance = 0.0;
-		  var total_time = 0.0;
-		  var i;
-		  for(i=0; i<waypoint_order.length; i++){
-		  	var path = route[i];
-		  	var idx = "#dist_mat_" + (waypoint_order[i] + 1);
-	  		console.log(idx);
-	  		total_distance += path['distance'].value;
-	  		total_time += path['duration'].value;
-	  		$(idx).append('<div class="row">'+(total_distance/1000).toFixed(2)+' km</div>');
-	  		$(idx).append('<div class="row">'+(total_time/60).toFixed(2)+' min</div>');
-	  		console.log($(idx));
-		  }
+	      console.log(result['routes'][0]['legs'])
+	      var route = result['routes'][0]['legs'];
+	      var total_distance = 0.0
+	      var total_time = 0.0
+	      var i;
+	      for(i=0; i<route.length; i++){
+	      	total_distance += route[i]['distance']['value']
+	      	total_time += route[i]['duration']['value']
+	      }
+	      $("#total_distance").text((total_distance / 1000) + " km");
+	      $("#total_time").text((total_time / 60) + " min");
 	    }
 	  });
 	}
@@ -155,28 +172,28 @@
 
 	function callback1(data){
 		google.maps.event.addDomListener(window, "load", initialize);
-	  	$("#students").empty();
-	  	var i;
-	  	for(i=1; i < data['locations'].length; i++){
-	  		if(data['locations'][i][0] != 'school'){
+	  	// var i;
+	  	// for(i=1; i < data['locations'].length; i++){
+	  	// 	if(data['locations'][i][0] != 'school'){
 
-	  			res = '<li class="list-group-item">\n';
-				res += '<div class="row"><div class="col">\n'
-				res += data['locations'][i][0]
-				res += '</div>\n'
-				res += '<div id="dist_mat_'+ i +'" class="col">\n'
-				res += '</div>\n'
-				res += '<div class="col">\n'
-				res += '<button type="button" swb_id="'+ data['locations'][i][0] +'" class="btn btn-primary btn-sm start_waiting">Reached</button>\n'
-				res += '</div>\n'
-				res += '<div class="col">\n'
-				res += '<input type="checkbox" data-toggle="toggle" data-on="Picked" data-off="Pick" data-onstyle="success" data-offstyle="danger" data-size="small">\n'
-				res += '</div></div>\n'
-				res += '</li>\n'
-		  		$("#students").append(res);
+	  	// 		res = '<li class="list-group-item">\n';
+				// res += '<div class="row"><div class="col">\n'
+				// res += data['locations'][i][0]
+				// res += '</div>\n'
+				// res += '<div id="dist_mat_'+ i +'" class="col">\n'
+				// res += '</div>\n'
+				// res += '<div class="col">\n'
+				// res += '<button type="button" swb_id="'+ data['locations'][i][0] +'" class="btn btn-primary btn-sm start_waiting">Reached</button>\n'
+				// res += '</div>\n'
+				// res += '<div class="col">\n'
+				// res += '<input type="checkbox" data-toggle="toggle" data-on="Picked" data-off="Pick" data-onstyle="success" data-offstyle="danger" data-size="small">\n'
+				// res += '</div></div>\n'
+				// res += '</li>\n'
+		  // 		//$("#info_and_control").append(res);
+	  	// 	}
 
-	  		}
-	  	}
+
+	  	// }
 
 	  	var all_locations = [];
 	  	for(i=0; i < data['locations'].length; i++){
@@ -184,35 +201,27 @@
 		  	all_locations.push(geo_coords);
 	  	}
 
-	 //  	distanceService.getDistanceMatrix(
-		//   {
-		//     origins: all_locations,
-		//     destinations: all_locations,
-		//     travelMode: 'DRIVING',
-		//   }, function(data){
-		//   	console.log(data);
-		//   	var matrix = data['rows']
-		//   	console.log(waypoint_order);
-		//   	waypoint_order = waypoint_order.map(x => x+1);
-		//   	waypoint_order.unshift(0);
-		//   	waypoint_order.push(waypoint_order.length);
-		//   	console.log("FUIHEIUHFEIFEF");
-		//   	console.log(waypoint_order);
-		//   	var i;
-		//   	for(i=0; i<matrix.length-1; i++){
-		//   		var origin = waypoint_order[i]
-		//   		var destination = waypoint_order[i+1]
-		//   		console.log(matrix[origin]['elements'][destination]);
-		//   		var info = matrix[origin]['elements'][destination];
-		//   		var idx = "#dist_mat_" + (i+1);
-		//   		console.log(idx);
-		//   		$(idx).append('<div class="row">'+info['distance'].text+'</div>');
-		//   		$(idx).append('<div class="row">'+info['duration'].text+'</div>');
-		//   		console.log($(idx));
-		//   	}
+	  	distanceService.getDistanceMatrix(
+		  {
+		    origins: all_locations,
+		    destinations: all_locations,
+		    travelMode: 'DRIVING',
+		  }, function(data){
+		  	console.log(data);
+		  	var matrix = data['rows']
+		  	var i;
+		  	for(i=0; i<matrix.length-1; i++){
+		  		console.log(matrix[i]['elements'][i+1]);
+		  		var info = matrix[i]['elements'][i+1];
+		  		var idx = "#dist_mat_" + (i+1);
+		  		console.log(idx);
+		  		$(idx).append('<div class="row">'+info['distance'].text+'</div>');
+		  		$(idx).append('<div class="row">'+info['duration'].text+'</div>');
+		  		console.log($(idx));
+		  	}
 
 
-		// });
+		});
 	}
 
 	load_locations(callback1);

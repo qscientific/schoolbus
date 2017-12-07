@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
     url(r'^home/$', bus_tracker_views.home, name='home'),
     url(r'^load_locations/$', bus_tracker_views.load_locations, name='load_locations'),
+    url(r'^update_locations/$', bus_tracker_views.update_locations, name='update_locations'),
 
 
     #index page

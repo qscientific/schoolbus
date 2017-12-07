@@ -7,6 +7,8 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from django.utils import timezone
+
 # Create your models here.
 
 
@@ -44,3 +46,10 @@ def create_user_profile(sender, instance, created, **kwargs):
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
 
+class Attendance(models.Model):
+	school_date = models.DateTimeField(auto_now_add=True)
+	going = models.BooleanField(default=True)
+	picked_time = models.DateTimeField(blank=True, null=True)
+	student = models.ForeignKey(Profile, on_delete=models.CASCADE)
+
+	
