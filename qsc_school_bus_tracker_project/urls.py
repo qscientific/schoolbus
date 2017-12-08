@@ -26,6 +26,8 @@ urlpatterns = [
     url(r'^home/$', bus_tracker_views.home, name='home'),
     url(r'^load_locations/$', bus_tracker_views.load_locations, name='load_locations'),
     url(r'^update_locations/$', bus_tracker_views.update_locations, name='update_locations'),
+    url(r'^new_day/$', bus_tracker_views.new_day, name='new_day'),
+    url(r'^pick_student/$', bus_tracker_views.pick_student, name='pick_student'),
 
 
     #index page

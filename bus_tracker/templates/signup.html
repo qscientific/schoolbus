@@ -10,6 +10,25 @@
     margin: 0px;
     padding: 0px;
   }
+
+  #id_geo_long{
+    display: none;
+  }
+
+  #id_geo_lat{
+    display: none;
+  }
+
+  label[for="id_geo_long"]
+  {
+      display:none;
+  }
+
+  label[for="id_geo_lat"]
+  {
+      display:none;
+  }
+
 </style>
 
   <!-- <img class="card-img-top" style="padding:10px; background-color: rgba(0, 0, 0, 0.0);" src='{% static "bus_tracker/logo3.png" %}' alt="Card image cap"> -->
@@ -25,6 +44,7 @@
     </div>
   </div>
   <div class="card-img-top" id="map"></div>
+  Please select your location on the map
   <div class="card-body" style="width: 100vw">
     
     

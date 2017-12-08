@@ -11,7 +11,7 @@ from bus_tracker.forms import SignUpForm
 from bus_tracker.models import *
 import logging
 
-
+from django.utils import timezone
 
 # Create your views here.
 
@@ -22,7 +22,7 @@ def signup(request):
         if form.is_valid():
             user = form.save()
             user.refresh_from_db()  # load the profile instance created by the signal
-            user.profile.user_type = form.cleaned_data.get('user_type')
+            user.profile.user_type = Profile.STUDENT_TYPE
             user.profile.geo_long = form.cleaned_data.get('geo_long')
             user.profile.geo_lat = form.cleaned_data.get('geo_lat')
             user.save()
@@ -53,7 +53,8 @@ def load_locations(request):
     if request.method == 'POST' and request.user.profile.user_type == Profile.DRIVER_TYPE:
         driver_location = [request.user.username, request.user.profile.geo_lat, request.user.profile.geo_long, 1]
         all_students = list(User.objects.filter(profile__user_type=Profile.STUDENT_TYPE))
-        all_locations = map(lambda (i, x): [x.username, x.profile.geo_lat, x.profile.geo_long, i + 2], enumerate(all_students))
+        all_locations = map(lambda (i, x): [x.username, x.profile.geo_lat, x.profile.geo_long, i + 2, x.profile.attendance_set.latest('school_date').going, x.profile.attendance_set.latest('school_date').picked_time is None], enumerate(all_students))
+        logging.warning(all_locations) 
         all_locations.insert(0, driver_location)
         try:
             school = User.objects.get(profile__user_type=Profile.ADMIN_TYPE)
@@ -69,7 +70,7 @@ def load_locations(request):
             all_locations.append(driver_location)
         except: pass
         all_students = list(User.objects.filter(profile__user_type=Profile.STUDENT_TYPE))
-        all_studs_locations = map(lambda (i, x): [x.username, x.profile.geo_lat, x.profile.geo_long, i + 2], enumerate(all_students))
+        all_studs_locations = map(lambda (i, x): [x.username, x.profile.geo_lat, x.profile.geo_long, i + 2, x.profile.attendance_set.latest('school_date').going, x.profile.attendance_set.latest('school_date').picked_time is None], enumerate(all_students))
         all_locations.extend(all_studs_locations)
         try:
             school = User.objects.get(profile__user_type=Profile.ADMIN_TYPE)
@@ -95,6 +96,41 @@ def update_locations(request):
             request.user.profile.save()
             return JsonResponse({'success': True});
         except:
+            return JsonResponse({'success': False});
+
+    else:
+        return JsonResponse({'success': False});
+
+@login_required
+def new_day(request):
+    if request.method == 'POST':
+        try:
+            all_students = list(Profile.objects.filter(user_type=Profile.STUDENT_TYPE))
+            all_new_days = map(lambda x: Attendance(student=x), all_students)
+            save_new_days = map(lambda x: x.save(), all_new_days)
+            return JsonResponse({'success': True});
+        except:
+            return JsonResponse({'success': False});
+    else:
+        return JsonResponse({'success': False});
+
+@login_required
+def pick_student(request):
+    if request.method == 'POST' and request.user.profile.user_type == Profile.DRIVER_TYPE:
+        logging.warning(request.POST)
+        data = request.POST
+        if type(data) != type(dict()): # could be a QueryDict
+            data = dict(data)
+            for k in data: # data is (k, [V]), make it (k, V)
+                data[k] = data[k][0]
+
+        try:
+            attendance = Attendance.objects.filter(student__user__username=data['student_username']).latest('school_date')
+            attendance.picked_time = timezone.now()
+            attendance.save()
+            return JsonResponse({'success': True});
+        except Exception as e:
+            logging.warning(e)
             return JsonResponse({'success': False});
 
     else:

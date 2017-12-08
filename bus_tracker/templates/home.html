@@ -27,7 +27,7 @@
 <div class="card-header">
     <div class="row">
       <div class="col">
-        <!-- <a role="button" href="/" class="btn btn-primary btn-sm btn-block">Back</a> -->
+        <button type="button" id="new_day" class="btn btn-primary btn-sm btn-block">New Day</button>
       </div>
       <div class="col-6">
         <h5>School Bus Application</h5>
@@ -52,7 +52,7 @@
 
 
 
-<a href='/logout/' class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Logout</a>
+<!-- <a href='/logout/' class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Logout</a> -->
 
 
 
@@ -99,33 +99,39 @@
 	  };
 	  for (i = 0; i < locations.length; i++) {
 
-	  	if (i==0) var image = '{% static "bus_tracker/bus_icon3.png" %}';
-	  	else if (i == (locations.length-1) ) var image = '{% static "bus_tracker/school_icon.png" %}';
-	  	else var image = '{% static "bus_tracker/student_icon2.png" %}';
+	  	if ((i == 0) || (i == (locations.length-1) ) || (locations[i][4] && locations[i][5])){
 
-	    marker = new google.maps.Marker({
-	      position: new google.maps.LatLng(locations[i][1], locations[i][2]),
-	      icon: image
-	    });
+	  		if (i==0) var image = '{% static "bus_tracker/bus_icon3.png" %}';
+		  	else if (i == (locations.length-1) ) var image = '{% static "bus_tracker/school_icon.png" %}';
+		  	else var image = '{% static "bus_tracker/student_icon2.png" %}';
 
-	    google.maps.event.addListener(marker, 'click', (function(marker, i) {
-	      return function() {
-	        infowindow.setContent(locations[i][0]);
-	        infowindow.open(map, marker);
-	      }
-	    })(marker, i));
-	    marker.setMap(map);
-	    all_markers.push(marker);
+		    marker = new google.maps.Marker({
+		      position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+		      icon: image
+		    });
 
-	    if (i == 0) request.origin = marker.getPosition();
-	    else if (i == locations.length - 1) request.destination = marker.getPosition();
-	    else {
-	      if (!request.waypoints) request.waypoints = [];
-	      request.waypoints.push({
-	        location: marker.getPosition(),
-	        stopover: true
-	      });
-	    }
+		    google.maps.event.addListener(marker, 'click', (function(marker, i) {
+		      return function() {
+		        infowindow.setContent(locations[i][0]);
+		        infowindow.open(map, marker);
+		      }
+		    })(marker, i));
+		    marker.setMap(map);
+		    all_markers.push(marker);
+
+		    if (i == 0) request.origin = marker.getPosition();
+		    else if (i == locations.length - 1) request.destination = marker.getPosition();
+		    else {
+		      if (!request.waypoints) request.waypoints = [];
+		      request.waypoints.push({
+		        location: marker.getPosition(),
+		        stopover: true
+		      });
+		    }
+
+	  	}
+
+	  	
 
 	  }
 	  directionsService.route(request, function(result, status) {
@@ -146,12 +152,12 @@
 		  var i;
 		  for(i=0; i<waypoint_order.length; i++){
 		  	var path = route[i];
-		  	var idx = "#dist_mat_" + (waypoint_order[i] + 1);
+		  	var idx = "#dist_mat_" + (waypoint_order[i] + (locations.length - waypoint_order.length - 1));
 	  		console.log(idx);
 	  		total_distance += path['distance'].value;
 	  		total_time += path['duration'].value;
-	  		$(idx).append('<div class="row">'+(total_distance/1000).toFixed(2)+' km</div>');
-	  		$(idx).append('<div class="row">'+(total_time/60).toFixed(2)+' min</div>');
+	  		$(idx).append('<div class="row">'+(total_distance/1000).toFixed(2)+' km away</div>');
+	  		$(idx).append('<div class="row">'+(total_time/60).toFixed(2)+' min left</div>');
 	  		console.log($(idx));
 		  }
 	    }
@@ -175,33 +181,38 @@
 	  };
 	  for (i = 0; i < locations.length; i++) {
 
-	  	if (i==0) var image = '{% static "bus_tracker/bus_icon3.png" %}';
-	  	else if (i == (locations.length-1) ) var image = '{% static "bus_tracker/school_icon.png" %}';
-	  	else var image = '{% static "bus_tracker/student_icon2.png" %}';
+	  	if ((i == 0) || (i == (locations.length-1) ) || (locations[i][4] && locations[i][5])){
+	  		if (i==0) var image = '{% static "bus_tracker/bus_icon3.png" %}';
+		  	else if (i == (locations.length-1) ) var image = '{% static "bus_tracker/school_icon.png" %}';
+		  	else var image = '{% static "bus_tracker/student_icon2.png" %}';
 
-	    marker = new google.maps.Marker({
-	      position: new google.maps.LatLng(locations[i][1], locations[i][2]),
-	      icon: image
-	    });
+		    marker = new google.maps.Marker({
+		      position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+		      icon: image
+		    });
 
-	    google.maps.event.addListener(marker, 'click', (function(marker, i) {
-	      return function() {
-	        infowindow.setContent(locations[i][0]);
-	        infowindow.open(map, marker);
-	      }
-	    })(marker, i));
-	    marker.setMap(map);
-	    all_markers.push(marker);
+		    google.maps.event.addListener(marker, 'click', (function(marker, i) {
+		      return function() {
+		        infowindow.setContent(locations[i][0]);
+		        infowindow.open(map, marker);
+		      }
+		    })(marker, i));
+		    marker.setMap(map);
+		    all_markers.push(marker);
 
-	    if (i == 0) request.origin = marker.getPosition();
-	    else if (i == locations.length - 1) request.destination = marker.getPosition();
-	    else {
-	      if (!request.waypoints) request.waypoints = [];
-	      request.waypoints.push({
-	        location: marker.getPosition(),
-	        stopover: true
-	      });
-	    }
+		    if (i == 0) request.origin = marker.getPosition();
+		    else if (i == locations.length - 1) request.destination = marker.getPosition();
+		    else {
+		      if (!request.waypoints) request.waypoints = [];
+		      request.waypoints.push({
+		        location: marker.getPosition(),
+		        stopover: true
+		      });
+		    }
+
+	  	}
+
+	  	
 
 	  }
 	  directionsService.route(request, function(result, status) {
@@ -222,12 +233,12 @@
 		  var i;
 		  for(i=0; i<waypoint_order.length; i++){
 		  	var path = route[i];
-		  	var idx = "#dist_mat_" + (waypoint_order[i] + 1);
+		  	var idx = "#dist_mat_" + (waypoint_order[i] + (locations.length - waypoint_order.length - 1));
 	  		console.log(idx);
 	  		total_distance += path['distance'].value;
 	  		total_time += path['duration'].value;
-	  		$(idx).append('<div class="row">'+(total_distance/1000).toFixed(2)+' km</div>');
-	  		$(idx).append('<div class="row">'+(total_time/60).toFixed(2)+' min</div>');
+	  		$(idx).append('<div class="row">'+(total_distance/1000).toFixed(2)+' km away</div>');
+	  		$(idx).append('<div class="row">'+(total_time/60).toFixed(2)+' min left</div>');
 	  		console.log($(idx));
 		  }
 	    }
@@ -253,21 +264,48 @@
 
 	  			res = '<li class="list-group-item">\n';
 				res += '<div class="row"><div class="col">\n'
-				res += data['locations'][i][0]
+				res += '<h5>' +data['locations'][i][0] + '</h5>\n'
 				res += '</div>\n'
 				res += '<div id="dist_mat_'+ i +'" class="col">\n'
 				res += '</div>\n'
+				// res += '<div class="col">\n'
+				// res += '<button type="button" swb_id="'+ data['locations'][i][0] +'" class="btn btn-primary btn-sm start_waiting">Reached</button>\n'
+				// res += '</div>\n'
 				res += '<div class="col">\n'
-				res += '<button type="button" swb_id="'+ data['locations'][i][0] +'" class="btn btn-primary btn-sm start_waiting">Reached</button>\n'
-				res += '</div>\n'
-				res += '<div class="col">\n'
-				res += '<input type="checkbox" data-toggle="toggle" data-on="Picked" data-off="Pick" data-onstyle="success" data-offstyle="danger" data-size="small">\n'
+				if(data['locations'][i][4]){
+					if(data['locations'][i][5]){
+						res += '<button data-val="'+ data['locations'][i][0] +'" type="button" class="btn btn-primary btn-block pick-btn">Pick</button>\n'
+					}
+					else{
+						res += '<button type="button" class="btn btn-success btn-block picked-btn" disabled>Picked</button>\n'
+					}
+				}
+				else{
+					res += '<button type="button" class="btn btn-warning btn-block not-going-btn" disabled>Not Going</button>\n'
+				}
+				// res += '<input type="checkbox" data-toggle="toggle" data-on="Picked" data-off="Pick" data-onstyle="success" data-offstyle="danger" data-size="small">\n'
+
 				res += '</div></div>\n'
 				res += '</li>\n'
 		  		$("#students").append(res);
 
 	  		}
 	  	}
+
+	  	$('.pick-btn').unbind().click(function () {
+		    // alert($(this).data('val'));
+		    var ele = $(this);
+		    $.post( "/pick_student/", {'student_username': $(this).data('val')}, function( data ) {
+			  	  console.log(data);
+				  if('success' in data && data['success']){
+				  	ele.replaceWith('<button type="button" class="btn btn-success btn-block picked-btn" disabled>Picked</button>\n');
+				  }
+				  else{
+				  	console.log('Picking student failed!');
+				  }
+				});
+
+		});
 
 
 	  // 	var all_locations = [];
@@ -316,21 +354,46 @@
 
 	  			res = '<li class="list-group-item">\n';
 				res += '<div class="row"><div class="col">\n'
-				res += data['locations'][i][0]
+				res += '<h5>' +data['locations'][i][0] + '</h5>\n'
 				res += '</div>\n'
 				res += '<div id="dist_mat_'+ i +'" class="col">\n'
 				res += '</div>\n'
+				// res += '<div class="col">\n'
+				// res += '<button type="button" swb_id="'+ data['locations'][i][0] +'" class="btn btn-primary btn-sm start_waiting">Reached</button>\n'
+				// res += '</div>\n'
 				res += '<div class="col">\n'
-				res += '<button type="button" swb_id="'+ data['locations'][i][0] +'" class="btn btn-primary btn-sm start_waiting">Reached</button>\n'
-				res += '</div>\n'
-				res += '<div class="col">\n'
-				res += '<input type="checkbox" data-toggle="toggle" data-on="Picked" data-off="Pick" data-onstyle="success" data-offstyle="danger" data-size="small">\n'
+				if(data['locations'][i][4]){
+					if(data['locations'][i][5]){
+						res += '<button data-val="'+ data['locations'][i][0] +'" type="button" class="btn btn-primary btn-block pick-btn">Pick</button>\n'
+					}
+					else{
+						res += '<button type="button" class="btn btn-success btn-block picked-btn" disabled>Picked</button>\n'
+					}
+				}
+				else{
+					res += '<button type="button" class="btn btn-warning btn-block not-going-btn" disabled>Not Going</button>\n'
+				}
+				// res += '<input type="checkbox" data-toggle="toggle" data-on="Picked" data-off="Pick" data-onstyle="success" data-offstyle="danger" data-size="small">\n'
 				res += '</div></div>\n'
 				res += '</li>\n'
 		  		$("#students").append(res);
 
 	  		}
 	  	}
+	  	$('.pick-btn').unbind().click(function () {
+		    // alert($(this).data('val'));
+		    var ele = $(this);
+		    $.post( "/pick_student/", {'student_username': $(this).data('val')}, function( data ) {
+			  	  console.log(data);
+				  if('success' in data && data['success']){
+				  	ele.replaceWith('<button type="button" class="btn btn-success btn-block picked-btn" disabled>Picked</button>\n');
+				  }
+				  else{
+				  	console.log('Picking student failed!');
+				  }
+				});
+
+		});
 	  }
 
 	load_locations(callback1);
@@ -385,8 +448,24 @@
 		load_locations(callback2);
 	}, 10000)
 
-	
 
+	//NEW DAY
+	function newDay(){
+		$.post( "/new_day/", {}, function( data ) {
+			  	  console.log(data);
+				  if('success' in data && data['success']){
+				  	console.log('NEW DAY!');
+				  	alert("Successfully started a new day! Please wait 10 seconds for map to refresh...");
+				  }
+				  else{
+				  	console.log('NEW DAY FAILED!');
+				  }
+				});
+	}
+
+	$('#new_day').unbind().click(function () {
+		newDay();
+	});
 
 
 	
