@@ -62,6 +62,7 @@
 	  ['Bondi Beach', 25.264938, 51.464412, 4],
 	];
 	var waypoint_order = [];
+	var all_markers = [];
 
 	function initialize() {
 	  
@@ -70,7 +71,7 @@
 	  });
 
 
-	  var map = new google.maps.Map(document.getElementById('map'), {
+	  map = new google.maps.Map(document.getElementById('map'), {
 	    zoom: 10,
 	    center: new google.maps.LatLng(25.293369, 51.487253),
 	    mapTypeId: google.maps.MapTypeId.ROADMAP
@@ -101,6 +102,83 @@
 	      }
 	    })(marker, i));
 	    marker.setMap(map);
+	    all_markers.push(marker);
+
+	    if (i == 0) request.origin = marker.getPosition();
+	    else if (i == locations.length - 1) request.destination = marker.getPosition();
+	    else {
+	      if (!request.waypoints) request.waypoints = [];
+	      request.waypoints.push({
+	        location: marker.getPosition(),
+	        stopover: true
+	      });
+	    }
+
+	  }
+	  directionsService.route(request, function(result, status) {
+	    if (status == google.maps.DirectionsStatus.OK) {
+	      directionsDisplay.setDirections(result);
+	      console.log(result);
+	      waypoint_order = result['routes'][0]['waypoint_order'];
+	   //    console.log('ergbhregiuhwngujrwgwrgf');
+	   //    console.log(waypoint_order);
+		  // waypoint_order = waypoint_order.map(x => x+1);
+		  // waypoint_order.unshift(0);
+		  // waypoint_order.push(waypoint_order.length);
+		  // console.log("FUIHEIUHFEIFEF");
+		  // console.log(waypoint_order);
+		  var route = result['routes'][0]['legs'];
+		  var total_distance = 0.0;
+		  var total_time = 0.0;
+		  var i;
+		  for(i=0; i<waypoint_order.length; i++){
+		  	var path = route[i];
+		  	var idx = "#dist_mat_" + (waypoint_order[i] + 1);
+	  		console.log(idx);
+	  		total_distance += path['distance'].value;
+	  		total_time += path['duration'].value;
+	  		$(idx).append('<div class="row">'+(total_distance/1000).toFixed(2)+' km</div>');
+	  		$(idx).append('<div class="row">'+(total_time/60).toFixed(2)+' min</div>');
+	  		console.log($(idx));
+		  }
+	    }
+	  });
+	}
+
+	function initialize2() {
+	  
+	  directionsDisplay.setDirections({routes: []});
+	  all_markers.map(x => x.setMap(null));
+	  all_markers = [];
+
+
+
+	  var infowindow = new google.maps.InfoWindow();
+
+	  var marker, i;
+	  var request = {
+	    travelMode: google.maps.TravelMode.DRIVING,
+	    optimizeWaypoints:true
+	  };
+	  for (i = 0; i < locations.length; i++) {
+
+	  	if (i==0) var image = '{% static "bus_tracker/bus_icon3.png" %}';
+	  	else if (i == (locations.length-1) ) var image = '{% static "bus_tracker/school_icon.png" %}';
+	  	else var image = '{% static "bus_tracker/student_icon2.png" %}';
+
+	    marker = new google.maps.Marker({
+	      position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+	      icon: image
+	    });
+
+	    google.maps.event.addListener(marker, 'click', (function(marker, i) {
+	      return function() {
+	        infowindow.setContent(locations[i][0]);
+	        infowindow.open(map, marker);
+	      }
+	    })(marker, i));
+	    marker.setMap(map);
+	    all_markers.push(marker);
 
 	    if (i == 0) request.origin = marker.getPosition();
 	    else if (i == locations.length - 1) request.destination = marker.getPosition();
@@ -178,11 +256,12 @@
 	  		}
 	  	}
 
-	  	var all_locations = [];
-	  	for(i=0; i < data['locations'].length; i++){
-			var geo_coords = new google.maps.LatLng(data['locations'][i][1], data['locations'][i][2]);
-		  	all_locations.push(geo_coords);
-	  	}
+
+	  // 	var all_locations = [];
+	  // 	for(i=0; i < data['locations'].length; i++){
+			// var geo_coords = new google.maps.LatLng(data['locations'][i][1], data['locations'][i][2]);
+		 //  	all_locations.push(geo_coords);
+	  // 	}
 
 	 //  	distanceService.getDistanceMatrix(
 		//   {
@@ -214,6 +293,32 @@
 
 		// });
 	}
+
+	function callback2(data){
+		initialize2();
+	  	$("#students").empty();
+	  	var i;
+	  	for(i=1; i < data['locations'].length; i++){
+	  		if(data['locations'][i][0] != 'school'){
+
+	  			res = '<li class="list-group-item">\n';
+				res += '<div class="row"><div class="col">\n'
+				res += data['locations'][i][0]
+				res += '</div>\n'
+				res += '<div id="dist_mat_'+ i +'" class="col">\n'
+				res += '</div>\n'
+				res += '<div class="col">\n'
+				res += '<button type="button" swb_id="'+ data['locations'][i][0] +'" class="btn btn-primary btn-sm start_waiting">Reached</button>\n'
+				res += '</div>\n'
+				res += '<div class="col">\n'
+				res += '<input type="checkbox" data-toggle="toggle" data-on="Picked" data-off="Pick" data-onstyle="success" data-offstyle="danger" data-size="small">\n'
+				res += '</div></div>\n'
+				res += '</li>\n'
+		  		$("#students").append(res);
+
+	  		}
+	  	}
+	  }
 
 	load_locations(callback1);
 
@@ -261,7 +366,12 @@
 
 	setInterval(function(){
 		getLocation();
+	}, 10000);
+
+	setInterval(function(){
+		load_locations(callback2);
 	}, 10000)
+
 	
 
 

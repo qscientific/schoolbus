@@ -67,6 +67,7 @@
 	  ['Cronulla Beach', 25.288843, 51.485483, 3],
 	  ['Bondi Beach', 25.264938, 51.464412, 4],
 	];
+	var all_markers = [];
 
 	function initialize() {
 	  
@@ -75,7 +76,7 @@
 	  });
 
 
-	  var map = new google.maps.Map(document.getElementById('map'), {
+	  map = new google.maps.Map(document.getElementById('map'), {
 	    zoom: 10,
 	    center: new google.maps.LatLng(25.293369, 51.487253),
 	    mapTypeId: google.maps.MapTypeId.ROADMAP
@@ -109,6 +110,95 @@
 	      position: new google.maps.LatLng(locations[i][1], locations[i][2]),
 	      icon: image
 	    });
+
+	    all_markers.push(marker);
+
+	  	if((i == 0) || (locations[i][0] == student_username)){
+	  		google.maps.event.addListener(marker, 'click', (function(marker, i) {
+		      return function() {
+		        infowindow.setContent(locations[i][0]);
+		        infowindow.open(map, marker);
+		      }
+		    })(marker, i));
+		    marker.setMap(map);
+	  	}
+	    
+	    if (i == 0) request.origin = marker.getPosition();
+	    else if (locations[i][0] == student_username){
+	    	found_cur_student = true;
+	    	request.destination = marker.getPosition();
+	    }
+	    else if (!found_cur_student){
+	    	if (!request.waypoints) request.waypoints = [];
+	      request.waypoints.push({
+	        location: marker.getPosition(),
+	        stopover: true
+	      });
+	    }
+
+
+
+	    
+	    // else if (i == locations.length - 1) request.destination = marker.getPosition();
+	    // else {
+	      
+	    // }
+
+	  }
+	  directionsService.route(request, function(result, status) {
+	    if (status == google.maps.DirectionsStatus.OK) {
+	      directionsDisplay.setDirections(result);
+	      console.log(result['routes'][0]['legs'])
+	      var route = result['routes'][0]['legs'];
+	      var total_distance = 0.0
+	      var total_time = 0.0
+	      var i;
+	      for(i=0; i<route.length; i++){
+	      	total_distance += route[i]['distance']['value']
+	      	total_time += route[i]['duration']['value']
+	      }
+	      $("#total_distance").text((total_distance / 1000) + " km");
+	      $("#total_time").text((total_time / 60) + " min");
+	    }
+	  });
+	}
+
+	function initialize2() {
+	  
+	  directionsDisplay.setDirections({routes: []});
+	  all_markers.map(x => x.setMap(null));
+	  all_markers = [];
+
+	  var infowindow = new google.maps.InfoWindow();
+
+	  var marker, i;
+	  var request = {
+	    travelMode: google.maps.TravelMode.DRIVING,
+	    optimizeWaypoints:true
+	  };
+
+	  var found_cur_student = false;
+	  for (i = 0; i < locations.length; i++) {
+
+	  	if (i==0) var image = '{% static "bus_tracker/bus_icon3.png" %}';
+	  	else var image = '{% static "bus_tracker/student_icon2.png" %}';
+
+	  	// var image = {
+		  //   url: 'https://image.flaticon.com/icons/png/128/0/622.png',
+		  //   // This marker is 20 pixels wide by 32 pixels high.
+		  //   size: new google.maps.Size(20, 32),
+		  //   // The origin for this image is (0, 0).
+		  //   origin: new google.maps.Point(0, 0),
+		  //   // The anchor for this image is the base of the flagpole at (0, 32).
+		  //   anchor: new google.maps.Point(0, 32)
+		  // };
+
+	  	marker = new google.maps.Marker({
+	      position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+	      icon: image
+	    });
+
+	    all_markers.push(marker);
 
 	  	if((i == 0) || (locations[i][0] == student_username)){
 	  		google.maps.event.addListener(marker, 'click', (function(marker, i) {
@@ -195,33 +285,37 @@
 
 	  	// }
 
-	  	var all_locations = [];
-	  	for(i=0; i < data['locations'].length; i++){
-			var geo_coords = new google.maps.LatLng(data['locations'][i][1], data['locations'][i][2]);
-		  	all_locations.push(geo_coords);
-	  	}
+	 //  	var all_locations = [];
+	 //  	for(i=0; i < data['locations'].length; i++){
+		// 	var geo_coords = new google.maps.LatLng(data['locations'][i][1], data['locations'][i][2]);
+		//   	all_locations.push(geo_coords);
+	 //  	}
 
-	  	distanceService.getDistanceMatrix(
-		  {
-		    origins: all_locations,
-		    destinations: all_locations,
-		    travelMode: 'DRIVING',
-		  }, function(data){
-		  	console.log(data);
-		  	var matrix = data['rows']
-		  	var i;
-		  	for(i=0; i<matrix.length-1; i++){
-		  		console.log(matrix[i]['elements'][i+1]);
-		  		var info = matrix[i]['elements'][i+1];
-		  		var idx = "#dist_mat_" + (i+1);
-		  		console.log(idx);
-		  		$(idx).append('<div class="row">'+info['distance'].text+'</div>');
-		  		$(idx).append('<div class="row">'+info['duration'].text+'</div>');
-		  		console.log($(idx));
-		  	}
+	 //  	distanceService.getDistanceMatrix(
+		//   {
+		//     origins: all_locations,
+		//     destinations: all_locations,
+		//     travelMode: 'DRIVING',
+		//   }, function(data){
+		//   	console.log(data);
+		//   	var matrix = data['rows']
+		//   	var i;
+		//   	for(i=0; i<matrix.length-1; i++){
+		//   		console.log(matrix[i]['elements'][i+1]);
+		//   		var info = matrix[i]['elements'][i+1];
+		//   		var idx = "#dist_mat_" + (i+1);
+		//   		console.log(idx);
+		//   		$(idx).append('<div class="row">'+info['distance'].text+'</div>');
+		//   		$(idx).append('<div class="row">'+info['duration'].text+'</div>');
+		//   		console.log($(idx));
+		//   	}
 
 
-		});
+		// });
+	}
+
+	function callback2(data){
+		initialize2();
 	}
 
 	load_locations(callback1);
@@ -270,7 +364,11 @@
 
 	setInterval(function(){
 		getLocation();
-	}, 10000)
+	}, 10000);
+
+	setInterval(function(){
+		load_locations(callback2);
+	}, 10000);
 	
 
 
