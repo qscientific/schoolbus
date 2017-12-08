@@ -293,7 +293,7 @@
 	  	}
 
 	  	$('.pick-btn').unbind().click(function () {
-		    // alert($(this).data('val'));
+		    alert('Picked up ' + $(this).data('val') + '. Please wait 10 seconds for map to refresh...');
 		    var ele = $(this);
 		    $.post( "/pick_student/", {'student_username': $(this).data('val')}, function( data ) {
 			  	  console.log(data);
@@ -381,7 +381,7 @@
 	  		}
 	  	}
 	  	$('.pick-btn').unbind().click(function () {
-		    // alert($(this).data('val'));
+		    alert('Picked up ' + $(this).data('val') + '. Please wait 10 seconds for map to refresh...');
 		    var ele = $(this);
 		    $.post( "/pick_student/", {'student_username': $(this).data('val')}, function( data ) {
 			  	  console.log(data);
