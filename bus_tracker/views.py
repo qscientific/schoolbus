@@ -29,6 +29,8 @@ def signup(request):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=user.username, password=raw_password)
             login(request, user)
+            attendance = Attendance(student=user.profile)
+            attendance.save()
             return redirect('home')
     else:
         form = SignUpForm()
