@@ -48,8 +48,8 @@
 <ul class="list-group list-group-flush">
 	<li class="list-group-item">Distance Remaining: <span id="total_distance"></span></li>
     <li class="list-group-item">Time Remaining: <span id="total_time"></span></li>
-    <li class="list-group-item">
-    	<input type="checkbox" data-toggle="toggle" data-on="I'm going to school" data-off="I'm not going to school" data-onstyle="success" data-offstyle="danger" data-size="large">
+    <li id="control-btn-place" class="list-group-item">
+
     </li>
   </ul>
 
@@ -66,7 +66,6 @@
 
 	var locations = [];
 	var student_username = "{{student_username}}";
-	
 
 	var geocoder;
 	var map;
@@ -83,6 +82,55 @@
 	var waypoint_order = [];
 
 	function initialize() {
+
+	  var student_going;
+	  var student_picked;
+	  var i;
+	  for(i=0; i < locations.length; i++){
+	  	if(locations[i][0] == student_username){
+	  		student_going = locations[i][4];
+	  		student_picked = locations[i][5];
+	  	}
+	  }
+
+	  if(student_going){
+	  	if(student_picked){
+	  		$("#control-btn-place").html('<button id="not-gonna-go-btn" type="button" class="btn btn-danger btn-block">I will not go to school today</button>');
+	  		$("#not-gonna-go-btn").unbind().click(function () {
+	  			var ele = $(this);
+	  			$.post( "/not_gonna_go_to_school/", {}, function( data ) {
+			  	  console.log(data);
+				  if('success' in data && data['success']){
+				  	alert('You chose not to go to school today. Please wait 10 seconds for app to refresh...');
+	  				ele.prop('disabled', true);
+				  }
+				  else{
+				  	console.log('Not gonna go to school btn failed!');
+				  }
+				});
+	  			
+	  		});
+	  	}
+	  	else{
+	  		$("#control-btn-place").html('<button type="button" class="btn btn-success btn-block" disabled>Already on my way to school!</button>');
+	  	}
+	  }
+	  else{
+	  	$("#control-btn-place").html('<button id="gonna-go-btn" type="button" class="btn btn-primary btn-block">I will go to school today</button>');
+	  	$("#gonna-go-btn").unbind().click(function () {
+	  			var ele = $(this);
+	  			$.post( "/gonna_go_to_school/", {}, function( data ) {
+			  	  console.log(data);
+				  if('success' in data && data['success']){
+				  	alert('You chose to go to school today. Please wait 10 seconds for app to refresh...');
+	  				ele.prop('disabled', true);
+				  }
+				  else{
+				  	console.log('Not gonna go to school btn failed!');
+				  }
+				});
+	  		});
+	  }
 	  
 	  directionsDisplay = new google.maps.DirectionsRenderer({
 	  	suppressMarkers: true
@@ -238,6 +286,55 @@
 	}
 
 	function initialize2() {
+
+	  var student_going;
+	  var student_picked;
+	  var i;
+	  for(i=0; i < locations.length; i++){
+	  	if(locations[i][0] == student_username){
+	  		student_going = locations[i][4];
+	  		student_picked = locations[i][5];
+	  	}
+	  }
+
+	  if(student_going){
+	  	if(student_picked){
+	  		$("#control-btn-place").html('<button id="not-gonna-go-btn" type="button" class="btn btn-danger btn-block">I will not go to school today</button>');
+	  		$("#not-gonna-go-btn").unbind().click(function () {
+	  			var ele = $(this);
+	  			$.post( "/not_gonna_go_to_school/", {}, function( data ) {
+			  	  console.log(data);
+				  if('success' in data && data['success']){
+				  	alert('You chose not to go to school today. Please wait 10 seconds for app to refresh...');
+	  				ele.prop('disabled', true);
+				  }
+				  else{
+				  	console.log('Not gonna go to school btn failed!');
+				  }
+				});
+	  			
+	  		});
+	  	}
+	  	else{
+	  		$("#control-btn-place").html('<button type="button" class="btn btn-success btn-block" disabled>Already on my way to school!</button>');
+	  	}
+	  }
+	  else{
+	  	$("#control-btn-place").html('<button id="gonna-go-btn" type="button" class="btn btn-primary btn-block">I will go to school today</button>');
+	  	$("#gonna-go-btn").unbind().click(function () {
+	  			var ele = $(this);
+	  			$.post( "/gonna_go_to_school/", {}, function( data ) {
+			  	  console.log(data);
+				  if('success' in data && data['success']){
+				  	alert('You chose to go to school today. Please wait 10 seconds for app to refresh...');
+	  				ele.prop('disabled', true);
+				  }
+				  else{
+				  	console.log('Not gonna go to school btn failed!');
+				  }
+				});
+	  		});
+	  }
 	  
 	  directionsDisplay.setDirections({routes: []});
 	  all_markers.map(x => x.setMap(null));

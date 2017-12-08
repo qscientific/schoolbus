@@ -135,3 +135,33 @@ def pick_student(request):
 
     else:
         return JsonResponse({'success': False});
+
+@login_required
+def not_gonna_go_to_school(request):
+    if request.method == 'POST' and request.user.profile.user_type == Profile.STUDENT_TYPE:
+        try:
+            attendance = request.user.profile.attendance_set.latest('school_date')
+            attendance.going = False
+            attendance.save()
+            return JsonResponse({'success': True});
+        except Exception as e:
+            logging.warning(e)
+            return JsonResponse({'success': False});
+
+    else:
+        return JsonResponse({'success': False});
+
+@login_required
+def gonna_go_to_school(request):
+    if request.method == 'POST' and request.user.profile.user_type == Profile.STUDENT_TYPE:
+        try:
+            attendance = request.user.profile.attendance_set.latest('school_date')
+            attendance.going = True
+            attendance.save()
+            return JsonResponse({'success': True});
+        except Exception as e:
+            logging.warning(e)
+            return JsonResponse({'success': False});
+
+    else:
+        return JsonResponse({'success': False});

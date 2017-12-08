@@ -27,6 +27,8 @@ urlpatterns = [
     url(r'^load_locations/$', bus_tracker_views.load_locations, name='load_locations'),
     url(r'^update_locations/$', bus_tracker_views.update_locations, name='update_locations'),
     url(r'^new_day/$', bus_tracker_views.new_day, name='new_day'),
+    url(r'^not_gonna_go_to_school/$', bus_tracker_views.not_gonna_go_to_school, name='not_gonna_go_to_school'),
+    url(r'^gonna_go_to_school/$', bus_tracker_views.gonna_go_to_school, name='gonna_go_to_school'),
     url(r'^pick_student/$', bus_tracker_views.pick_student, name='pick_student'),
 
 
