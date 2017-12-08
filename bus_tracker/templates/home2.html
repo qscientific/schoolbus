@@ -270,8 +270,8 @@
 		  		// $(idx).append('<div class="row">'+(total_time/60).toFixed(2)+' min</div>');
 		  		// console.log($(idx));
 			  }
-			  $("#total_distance").text((total_distance / 1000) + " km");
-		      $("#total_time").text((total_time / 60) + " min");
+			  $("#total_distance").text((total_distance / 1000).toFixed(2) + " km");
+		      $("#total_time").text((total_time / 60).toFixed(2) + " min");
 
 		      var request = result['request'];
 		      request['destination'] = request['waypoints'][waypoint_order[found_idx]]['location'];
@@ -475,8 +475,8 @@
 		  		// $(idx).append('<div class="row">'+(total_time/60).toFixed(2)+' min</div>');
 		  		// console.log($(idx));
 			  }
-			  $("#total_distance").text((total_distance / 1000) + " km");
-		      $("#total_time").text((total_time / 60) + " min");
+			  $("#total_distance").text((total_distance / 1000).toFixed(2) + " km");
+		      $("#total_time").text((total_time / 60).toFixed(2) + " min");
 
 		      var request = result['request'];
 		      request['destination'] = request['waypoints'][waypoint_order[found_idx]]['location'];
