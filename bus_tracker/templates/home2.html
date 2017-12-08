@@ -142,146 +142,156 @@
 	    center: new google.maps.LatLng(25.293369, 51.487253),
 	    mapTypeId: google.maps.MapTypeId.ROADMAP
 	  });
+
 	  directionsDisplay.setMap(map);
-	  var infowindow = new google.maps.InfoWindow();
 
-	  var marker, i;
-	  var request = {
-	    travelMode: google.maps.TravelMode.DRIVING,
-	    optimizeWaypoints:true
-	  };
+	  $("#total_distance").empty();
+	  $("#total_time").empty();
 
-	  var found_cur_student = false;
-	  for (i = 0; i < locations.length; i++) {
+	  if(student_going && student_picked){
 
-	  	if (i==0) var image = '{% static "bus_tracker/bus_icon3.png" %}';
-	  	else var image = '{% static "bus_tracker/student_icon2.png" %}';
+	  	  
+		  var infowindow = new google.maps.InfoWindow();
 
-	  	// var image = {
-		  //   url: 'https://image.flaticon.com/icons/png/128/0/622.png',
-		  //   // This marker is 20 pixels wide by 32 pixels high.
-		  //   size: new google.maps.Size(20, 32),
-		  //   // The origin for this image is (0, 0).
-		  //   origin: new google.maps.Point(0, 0),
-		  //   // The anchor for this image is the base of the flagpole at (0, 32).
-		  //   anchor: new google.maps.Point(0, 32)
-		  // };
+		  var marker, i;
+		  var request = {
+		    travelMode: google.maps.TravelMode.DRIVING,
+		    optimizeWaypoints:true
+		  };
 
-	  	marker = new google.maps.Marker({
-	      position: new google.maps.LatLng(locations[i][1], locations[i][2]),
-	      icon: image
-	    });
+		  var found_cur_student = false;
+		  for (i = 0; i < locations.length; i++) {
 
-	    all_markers.push(marker);
+		  	if (i==0) var image = '{% static "bus_tracker/bus_icon3.png" %}';
+		  	else var image = '{% static "bus_tracker/student_icon2.png" %}';
 
-	  	if((i == 0) || (locations[i][0] == student_username)){
-	  		google.maps.event.addListener(marker, 'click', (function(marker, i) {
-		      return function() {
-		        infowindow.setContent(locations[i][0]);
-		        infowindow.open(map, marker);
+		  	// var image = {
+			  //   url: 'https://image.flaticon.com/icons/png/128/0/622.png',
+			  //   // This marker is 20 pixels wide by 32 pixels high.
+			  //   size: new google.maps.Size(20, 32),
+			  //   // The origin for this image is (0, 0).
+			  //   origin: new google.maps.Point(0, 0),
+			  //   // The anchor for this image is the base of the flagpole at (0, 32).
+			  //   anchor: new google.maps.Point(0, 32)
+			  // };
+
+		  	marker = new google.maps.Marker({
+		      position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+		      icon: image
+		    });
+
+		    all_markers.push(marker);
+
+		  	if((i == 0) || (locations[i][0] == student_username)){
+		  		google.maps.event.addListener(marker, 'click', (function(marker, i) {
+			      return function() {
+			        infowindow.setContent(locations[i][0]);
+			        infowindow.open(map, marker);
+			      }
+			    })(marker, i));
+			    marker.setMap(map);
+		  	}
+		    
+		    // if (i == 0) request.origin = marker.getPosition();
+		    // else if (locations[i][0] == student_username){
+		    // 	found_cur_student = true;
+		    // 	request.destination = marker.getPosition();
+		    // }
+		    // else if (!found_cur_student){
+		    // 	if (!request.waypoints) request.waypoints = [];
+		    //   request.waypoints.push({
+		    //     location: marker.getPosition(),
+		    //     stopover: true
+		    //   });
+		    // }
+		    // 
+		    if (i == 0) request.origin = marker.getPosition();
+		    else if (i == locations.length - 1) request.destination = marker.getPosition();
+		    else {
+		      if (!request.waypoints) request.waypoints = [];
+		      request.waypoints.push({
+		        location: marker.getPosition(),
+		        stopover: true
+		      });
+		    }
+
+
+
+		    
+		    // else if (i == locations.length - 1) request.destination = marker.getPosition();
+		    // else {
+		      
+		    // }
+
+		  }
+		  directionsService.route(request, function(result, status) {
+		    if (status == google.maps.DirectionsStatus.OK) {
+		      // directionsDisplay.setDirections(result);
+		      // console.log(result['routes'][0]['legs'])
+		      // var route = result['routes'][0]['legs'];
+		      // waypoint_order = result['routes'][0]['waypoint_order'];
+		      // var total_distance = 0.0
+		      // var total_time = 0.0
+		      // var i;
+		      // for(i=0; i<route.length; i++){
+		      // 	total_distance += route[i]['distance']['value']
+		      // 	total_time += route[i]['duration']['value']
+		      // }
+		      // $("#total_distance").text((total_distance / 1000) + " km");
+		      // $("#total_time").text((total_time / 60) + " min");
+		      console.log(result);
+		      waypoint_order = result['routes'][0]['waypoint_order'];
+		      var route = result['routes'][0]['legs'];
+			  var total_distance = 0.0;
+			  var total_time = 0.0;
+			  var found = false;
+			  var found_idx = -1;
+			  var keep_waypoints = [];
+			  var i;
+			  for(i=0; i<waypoint_order.length; i++){
+			  	if(!found){
+			  		var path = route[i];
+			  		total_distance += path['distance'].value;
+		  			total_time += path['duration'].value;
+		  			if(locations[waypoint_order[i]+1][0] == student_username){
+		  				found = true;
+		  				found_idx = i;
+		  			}
+		  			else{
+		  				keep_waypoints.push(waypoint_order[i]);
+		  			}
+			  	}
+			  	// var path = route[i];
+			  	// var idx = "#dist_mat_" + (waypoint_order[i] + 1);
+		  		// console.log(idx);
+		  		// total_distance += path['distance'].value;
+		  		// total_time += path['duration'].value;
+		  		// $(idx).append('<div class="row">'+(total_distance/1000).toFixed(2)+' km</div>');
+		  		// $(idx).append('<div class="row">'+(total_time/60).toFixed(2)+' min</div>');
+		  		// console.log($(idx));
+			  }
+			  $("#total_distance").text((total_distance / 1000) + " km");
+		      $("#total_time").text((total_time / 60) + " min");
+
+		      var request = result['request'];
+		      request['destination'] = request['waypoints'][waypoint_order[found_idx]]['location'];
+		      var req_waypoints = request['waypoints']
+		      var new_req_waypoints = [];
+		      for(x in keep_waypoints){
+		      	new_req_waypoints.push(req_waypoints[x]);
 		      }
-		    })(marker, i));
-		    marker.setMap(map);
-	  	}
-	    
-	    // if (i == 0) request.origin = marker.getPosition();
-	    // else if (locations[i][0] == student_username){
-	    // 	found_cur_student = true;
-	    // 	request.destination = marker.getPosition();
-	    // }
-	    // else if (!found_cur_student){
-	    // 	if (!request.waypoints) request.waypoints = [];
-	    //   request.waypoints.push({
-	    //     location: marker.getPosition(),
-	    //     stopover: true
-	    //   });
-	    // }
-	    // 
-	    if (i == 0) request.origin = marker.getPosition();
-	    else if (i == locations.length - 1) request.destination = marker.getPosition();
-	    else {
-	      if (!request.waypoints) request.waypoints = [];
-	      request.waypoints.push({
-	        location: marker.getPosition(),
-	        stopover: true
-	      });
-	    }
+		      request['waypoints'] = new_req_waypoints;
 
+		      directionsService.route(request, function(result, status) {
+		      	if (status == google.maps.DirectionsStatus.OK) {
+		      		directionsDisplay.setDirections(result);
+		      	}
+		      });
 
-
-	    
-	    // else if (i == locations.length - 1) request.destination = marker.getPosition();
-	    // else {
-	      
-	    // }
+		    }
+		  });
 
 	  }
-	  directionsService.route(request, function(result, status) {
-	    if (status == google.maps.DirectionsStatus.OK) {
-	      // directionsDisplay.setDirections(result);
-	      // console.log(result['routes'][0]['legs'])
-	      // var route = result['routes'][0]['legs'];
-	      // waypoint_order = result['routes'][0]['waypoint_order'];
-	      // var total_distance = 0.0
-	      // var total_time = 0.0
-	      // var i;
-	      // for(i=0; i<route.length; i++){
-	      // 	total_distance += route[i]['distance']['value']
-	      // 	total_time += route[i]['duration']['value']
-	      // }
-	      // $("#total_distance").text((total_distance / 1000) + " km");
-	      // $("#total_time").text((total_time / 60) + " min");
-	      console.log(result);
-	      waypoint_order = result['routes'][0]['waypoint_order'];
-	      var route = result['routes'][0]['legs'];
-		  var total_distance = 0.0;
-		  var total_time = 0.0;
-		  var found = false;
-		  var found_idx = -1;
-		  var keep_waypoints = [];
-		  var i;
-		  for(i=0; i<waypoint_order.length; i++){
-		  	if(!found){
-		  		var path = route[i];
-		  		total_distance += path['distance'].value;
-	  			total_time += path['duration'].value;
-	  			if(locations[waypoint_order[i]+1][0] == student_username){
-	  				found = true;
-	  				found_idx = i;
-	  			}
-	  			else{
-	  				keep_waypoints.push(waypoint_order[i]);
-	  			}
-		  	}
-		  	// var path = route[i];
-		  	// var idx = "#dist_mat_" + (waypoint_order[i] + 1);
-	  		// console.log(idx);
-	  		// total_distance += path['distance'].value;
-	  		// total_time += path['duration'].value;
-	  		// $(idx).append('<div class="row">'+(total_distance/1000).toFixed(2)+' km</div>');
-	  		// $(idx).append('<div class="row">'+(total_time/60).toFixed(2)+' min</div>');
-	  		// console.log($(idx));
-		  }
-		  $("#total_distance").text((total_distance / 1000) + " km");
-	      $("#total_time").text((total_time / 60) + " min");
-
-	      var request = result['request'];
-	      request['destination'] = request['waypoints'][waypoint_order[found_idx]]['location'];
-	      var req_waypoints = request['waypoints']
-	      var new_req_waypoints = [];
-	      for(x in keep_waypoints){
-	      	new_req_waypoints.push(req_waypoints[x]);
-	      }
-	      request['waypoints'] = new_req_waypoints;
-
-	      directionsService.route(request, function(result, status) {
-	      	if (status == google.maps.DirectionsStatus.OK) {
-	      		directionsDisplay.setDirections(result);
-	      	}
-	      });
-
-	    }
-	  });
 
 	}
 
@@ -335,149 +345,160 @@
 				});
 	  		});
 	  }
-	  
-	  directionsDisplay.setDirections({routes: []});
+
+  	  directionsDisplay.setDirections({routes: []});
 	  all_markers.map(x => x.setMap(null));
 	  all_markers = [];
 
-	  var infowindow = new google.maps.InfoWindow();
+	  $("#total_distance").empty();
+	  $("#total_time").empty();
 
-	  var marker, i;
-	  var request = {
-	    travelMode: google.maps.TravelMode.DRIVING,
-	    optimizeWaypoints:true
-	  };
+	  if(student_going && student_picked){
 
-	  var found_cur_student = false;
-	  for (i = 0; i < locations.length; i++) {
+	  	  
 
-	  	if (i==0) var image = '{% static "bus_tracker/bus_icon3.png" %}';
-	  	else var image = '{% static "bus_tracker/student_icon2.png" %}';
+		  var infowindow = new google.maps.InfoWindow();
 
-	  	// var image = {
-		  //   url: 'https://image.flaticon.com/icons/png/128/0/622.png',
-		  //   // This marker is 20 pixels wide by 32 pixels high.
-		  //   size: new google.maps.Size(20, 32),
-		  //   // The origin for this image is (0, 0).
-		  //   origin: new google.maps.Point(0, 0),
-		  //   // The anchor for this image is the base of the flagpole at (0, 32).
-		  //   anchor: new google.maps.Point(0, 32)
-		  // };
+		  var marker, i;
+		  var request = {
+		    travelMode: google.maps.TravelMode.DRIVING,
+		    optimizeWaypoints:true
+		  };
 
-	  	marker = new google.maps.Marker({
-	      position: new google.maps.LatLng(locations[i][1], locations[i][2]),
-	      icon: image
-	    });
+		  var found_cur_student = false;
+		  for (i = 0; i < locations.length; i++) {
 
-	    all_markers.push(marker);
+		  	if (i==0) var image = '{% static "bus_tracker/bus_icon3.png" %}';
+		  	else var image = '{% static "bus_tracker/student_icon2.png" %}';
 
-	  	if((i == 0) || (locations[i][0] == student_username)){
-	  		google.maps.event.addListener(marker, 'click', (function(marker, i) {
-		      return function() {
-		        infowindow.setContent(locations[i][0]);
-		        infowindow.open(map, marker);
+		  	// var image = {
+			  //   url: 'https://image.flaticon.com/icons/png/128/0/622.png',
+			  //   // This marker is 20 pixels wide by 32 pixels high.
+			  //   size: new google.maps.Size(20, 32),
+			  //   // The origin for this image is (0, 0).
+			  //   origin: new google.maps.Point(0, 0),
+			  //   // The anchor for this image is the base of the flagpole at (0, 32).
+			  //   anchor: new google.maps.Point(0, 32)
+			  // };
+
+		  	marker = new google.maps.Marker({
+		      position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+		      icon: image
+		    });
+
+		    all_markers.push(marker);
+
+		  	if((i == 0) || (locations[i][0] == student_username)){
+		  		google.maps.event.addListener(marker, 'click', (function(marker, i) {
+			      return function() {
+			        infowindow.setContent(locations[i][0]);
+			        infowindow.open(map, marker);
+			      }
+			    })(marker, i));
+			    marker.setMap(map);
+		  	}
+		    
+		    // if (i == 0) request.origin = marker.getPosition();
+		    // else if (locations[i][0] == student_username){
+		    // 	found_cur_student = true;
+		    // 	request.destination = marker.getPosition();
+		    // }
+		    // else if (!found_cur_student){
+		    // 	if (!request.waypoints) request.waypoints = [];
+		    //   request.waypoints.push({
+		    //     location: marker.getPosition(),
+		    //     stopover: true
+		    //   });
+		    // }
+
+		    if (i == 0) request.origin = marker.getPosition();
+		    else if (i == locations.length - 1) request.destination = marker.getPosition();
+		    else {
+		      if (!request.waypoints) request.waypoints = [];
+		      request.waypoints.push({
+		        location: marker.getPosition(),
+		        stopover: true
+		      });
+		    }
+
+
+		    
+		    // else if (i == locations.length - 1) request.destination = marker.getPosition();
+		    // else {
+		      
+		    // }
+
+		  }
+		  directionsService.route(request, function(result, status) {
+		    if (status == google.maps.DirectionsStatus.OK) {
+		      // directionsDisplay.setDirections(result);
+		      // console.log(result['routes'][0]['legs'])
+		      // var route = result['routes'][0]['legs'];
+		      // waypoint_order = result['routes'][0]['waypoint_order'];
+		      // var total_distance = 0.0
+		      // var total_time = 0.0
+		      // var i;
+		      // for(i=0; i<route.length; i++){
+		      // 	total_distance += route[i]['distance']['value']
+		      // 	total_time += route[i]['duration']['value']
+		      // }
+		      // $("#total_distance").text((total_distance / 1000) + " km");
+		      // $("#total_time").text((total_time / 60) + " min");
+		      console.log(result);
+		      waypoint_order = result['routes'][0]['waypoint_order'];
+		      var route = result['routes'][0]['legs'];
+			  var total_distance = 0.0;
+			  var total_time = 0.0;
+			  var found = false;
+			  var found_idx = -1;
+			  var keep_waypoints = [];
+			  var i;
+			  for(i=0; i<waypoint_order.length; i++){
+			  	if(!found){
+			  		var path = route[i];
+			  		total_distance += path['distance'].value;
+		  			total_time += path['duration'].value;
+		  			if(locations[waypoint_order[i]+1][0] == student_username){
+		  				found = true;
+		  				found_idx = i;
+		  			}
+		  			else{
+		  				keep_waypoints.push(waypoint_order[i]);
+		  			}
+			  	}
+			  	// var path = route[i];
+			  	// var idx = "#dist_mat_" + (waypoint_order[i] + 1);
+		  		// console.log(idx);
+		  		// total_distance += path['distance'].value;
+		  		// total_time += path['duration'].value;
+		  		// $(idx).append('<div class="row">'+(total_distance/1000).toFixed(2)+' km</div>');
+		  		// $(idx).append('<div class="row">'+(total_time/60).toFixed(2)+' min</div>');
+		  		// console.log($(idx));
+			  }
+			  $("#total_distance").text((total_distance / 1000) + " km");
+		      $("#total_time").text((total_time / 60) + " min");
+
+		      var request = result['request'];
+		      request['destination'] = request['waypoints'][waypoint_order[found_idx]]['location'];
+		      var req_waypoints = request['waypoints']
+		      var new_req_waypoints = [];
+		      for(x in keep_waypoints){
+		      	new_req_waypoints.push(req_waypoints[x]);
 		      }
-		    })(marker, i));
-		    marker.setMap(map);
-	  	}
-	    
-	    // if (i == 0) request.origin = marker.getPosition();
-	    // else if (locations[i][0] == student_username){
-	    // 	found_cur_student = true;
-	    // 	request.destination = marker.getPosition();
-	    // }
-	    // else if (!found_cur_student){
-	    // 	if (!request.waypoints) request.waypoints = [];
-	    //   request.waypoints.push({
-	    //     location: marker.getPosition(),
-	    //     stopover: true
-	    //   });
-	    // }
+		      request['waypoints'] = new_req_waypoints;
 
-	    if (i == 0) request.origin = marker.getPosition();
-	    else if (i == locations.length - 1) request.destination = marker.getPosition();
-	    else {
-	      if (!request.waypoints) request.waypoints = [];
-	      request.waypoints.push({
-	        location: marker.getPosition(),
-	        stopover: true
-	      });
-	    }
+		      directionsService.route(request, function(result, status) {
+		      	if (status == google.maps.DirectionsStatus.OK) {
+		      		directionsDisplay.setDirections(result);
+		      	}
+		      });
 
+		    }
+		  });
 
-	    
-	    // else if (i == locations.length - 1) request.destination = marker.getPosition();
-	    // else {
-	      
-	    // }
 
 	  }
-	  directionsService.route(request, function(result, status) {
-	    if (status == google.maps.DirectionsStatus.OK) {
-	      // directionsDisplay.setDirections(result);
-	      // console.log(result['routes'][0]['legs'])
-	      // var route = result['routes'][0]['legs'];
-	      // waypoint_order = result['routes'][0]['waypoint_order'];
-	      // var total_distance = 0.0
-	      // var total_time = 0.0
-	      // var i;
-	      // for(i=0; i<route.length; i++){
-	      // 	total_distance += route[i]['distance']['value']
-	      // 	total_time += route[i]['duration']['value']
-	      // }
-	      // $("#total_distance").text((total_distance / 1000) + " km");
-	      // $("#total_time").text((total_time / 60) + " min");
-	      console.log(result);
-	      waypoint_order = result['routes'][0]['waypoint_order'];
-	      var route = result['routes'][0]['legs'];
-		  var total_distance = 0.0;
-		  var total_time = 0.0;
-		  var found = false;
-		  var found_idx = -1;
-		  var keep_waypoints = [];
-		  var i;
-		  for(i=0; i<waypoint_order.length; i++){
-		  	if(!found){
-		  		var path = route[i];
-		  		total_distance += path['distance'].value;
-	  			total_time += path['duration'].value;
-	  			if(locations[waypoint_order[i]+1][0] == student_username){
-	  				found = true;
-	  				found_idx = i;
-	  			}
-	  			else{
-	  				keep_waypoints.push(waypoint_order[i]);
-	  			}
-		  	}
-		  	// var path = route[i];
-		  	// var idx = "#dist_mat_" + (waypoint_order[i] + 1);
-	  		// console.log(idx);
-	  		// total_distance += path['distance'].value;
-	  		// total_time += path['duration'].value;
-	  		// $(idx).append('<div class="row">'+(total_distance/1000).toFixed(2)+' km</div>');
-	  		// $(idx).append('<div class="row">'+(total_time/60).toFixed(2)+' min</div>');
-	  		// console.log($(idx));
-		  }
-		  $("#total_distance").text((total_distance / 1000) + " km");
-	      $("#total_time").text((total_time / 60) + " min");
-
-	      var request = result['request'];
-	      request['destination'] = request['waypoints'][waypoint_order[found_idx]]['location'];
-	      var req_waypoints = request['waypoints']
-	      var new_req_waypoints = [];
-	      for(x in keep_waypoints){
-	      	new_req_waypoints.push(req_waypoints[x]);
-	      }
-	      request['waypoints'] = new_req_waypoints;
-
-	      directionsService.route(request, function(result, status) {
-	      	if (status == google.maps.DirectionsStatus.OK) {
-	      		directionsDisplay.setDirections(result);
-	      	}
-	      });
-
-	    }
-	  });
+	  
 	}
 
 	function load_locations(callback_func){
