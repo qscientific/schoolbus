@@ -21,7 +21,7 @@
 <a class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Account</a> -->
 <!-- <a href='/report/' class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Report</a>
 <a href='/food_database/' class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Food Database</a> -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBpRIKS8QnytnGPopeZi3xgbz-bwNau4S0"></script>
+
 
 
 <div class="card-header">
@@ -59,6 +59,8 @@
 
 <script type="text/javascript">
 
+function initAll(){
+
 	var locations = [];
 
 	
@@ -76,7 +78,6 @@
 	];
 	var waypoint_order = [];
 	var all_markers = [];
-
 	function initialize() {
 	  
 	  directionsDisplay = new google.maps.DirectionsRenderer({
@@ -256,7 +257,8 @@
 	}
 
 	function callback1(data){
-		google.maps.event.addDomListener(window, "load", initialize);
+		// google.maps.event.addDomListener(window, "load", initialize);
+		initialize();
 	  	$("#students").empty();
 	  	var i;
 	  	for(i=1; i < data['locations'].length; i++){
@@ -398,7 +400,6 @@
 
 	load_locations(callback1);
 
-
 	// document.getElementById('timer').innerHTML =
 	//   03 + ":" + 00;
 	// startTimer();
@@ -468,7 +469,10 @@
 	});
 
 
-	
+}
+
 </script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBpRIKS8QnytnGPopeZi3xgbz-bwNau4S0&callback=initAll" async defer></script>
 
 {% endblock %}
