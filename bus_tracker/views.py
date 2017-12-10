@@ -39,12 +39,41 @@ def signup(request):
 def index(request):
     return render(request, 'index.html')
 
+def gen_info(attendance_list, num_days_old):
+    if(len(attendance_list) > num_days_old):
+        attendance = attendance_list[num_days_old]
+        if (not attendance.going): return "Skipped"
+        elif (attendance.picked_time is None): return "Not Picked"
+        else: return "Picked at " + str(attendance.picked_time.strftime('%H:%M:%S'))
+    else:
+        return "No Record"
+
+
+
+
 @login_required
 def home(request):
     if request.user.profile.user_type == Profile.DRIVER_TYPE:
         return render(request, 'home.html')
     elif request.user.profile.user_type == Profile.STUDENT_TYPE:
         return render(request, 'home2.html', {'student_username': request.user.username})
+    elif request.user.profile.user_type == Profile.ADMIN_TYPE:
+        data = request.GET
+        if type(data) != type(dict()): # could be a QueryDict
+            data = dict(data)
+            for k in data: # data is (k, [V]), make it (k, V)
+                data[k] = data[k][0]
+        logging.warning(data)
+        if 'days_old' in data:
+            num_days_old = int(data['days_old'])
+        else:
+            num_days_old = 0;
+        all_students = list(User.objects.filter(profile__user_type=Profile.STUDENT_TYPE))
+        all_attendance = map(lambda x: (x.username,list(x.profile.attendance_set.all().order_by('-school_date'))), all_students)
+        res_attendance = map(lambda x: (x[0],gen_info(x[1], num_days_old)), all_attendance)
+
+        logging.warning(res_attendance)
+        return render(request, 'home3.html', {'data': res_attendance})
 
 @login_required
 def load_locations(request):

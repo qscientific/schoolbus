@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+
+	<!-- <style type="text/css">
+		body{
+			align-items:center;
+		}
+	</style> -->
+
+	<div class="card-header">
+    <div class="row">
+      <div class="col">
+        <!-- <a role="button" href="/" class="btn btn-primary btn-sm btn-block">Back</a> -->
+      </div>
+      <div class="col-6">
+        <h3>School Bus Application</h3>
+      </div>
+      <div class="col">
+      	<a role="button" href='/logout/' class="btn btn-primary btn-sm btn-block">Logout</a>
+      </div>
+    </div>
+  </div>
+	<!-- <img class="card-img-top" style="padding:10px; background-color: rgba(0, 0, 0, 0.0);" src='{% static "bus_tracker/logo3.png" %}' alt="Card image cap"> -->
+	<div class="card-body">
+		<!-- <h4 class="card-title">School Bus Application</h4> -->
+		<!-- <a href='/signup/' class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Sign Up</a>
+		<a href='/login/' class="btn btn-primary btn-lg active" style="width: 100%" role="button" aria-pressed="true">Login</a> -->
+		<div class="btn-group" role="group" aria-label="Basic example">
+		  <button id="prev-day-btn" type="button" class="btn btn-outline-primary">Prev</button>
+		  <a href='/home/' class="btn btn-primary" style="width: 100%" role="button">Today</a>
+		  <button id="next-day-btn" type="button" class="btn btn-outline-primary">Next</button>
+		</div>
+	</div>
+
+	<table class="table">
+	  <thead>
+	    <tr>
+	      <th scope="col">#</th>
+	      <th scope="col">Name</th>
+	      <th scope="col">Status</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	  	{% for d in data %}
+	  		<tr>
+		      <th scope="row">{{ forloop.counter }}</th>
+		      <td>{{ d.0 }}</td>
+		      <td>{{ d.1 }}</td>
+		    </tr>
+	  	{% endfor %}
+
+	  </tbody>
+	</table>
+
+	<script type="text/javascript">
+
+		$( document ).ready(function() {
+			$.urlParam = function(name){
+			    var results = new RegExp('[\?&]' + name + '=([^]*)').exec(window.location.href);
+			    if (results==null){
+			       return null;
+			    }
+			    else{
+			       return results[1] || 0;
+			    }
+			}
+
+		    $("#prev-day-btn").click(function () {
+				var days_old = $.urlParam('days_old');
+				if(days_old){
+					days_old = parseInt(days_old) + 1;
+				}
+				else{
+					days_old = 1
+				}
+				window.location.replace("/home/?days_old=" + days_old);
+			});
+			$("#next-day-btn").click(function () {
+				var days_old = $.urlParam('days_old');
+				if(days_old){
+					days_old = parseInt(days_old);
+					if(days_old > 0){
+						days_old = days_old - 1;
+						window.location.replace("/home/?days_old=" + days_old);
+					}
+				}
+			});
+		});
+	</script>
+
+
+
+{% endblock %}
