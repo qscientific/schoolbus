@@ -62,9 +62,9 @@
 function initAll(){
 
 	jQuery.fn.insertAt = function(index, element) {
-	  console.log(this);
-	  console.log(this.children());
-	  var lastIndex = this.children().size();
+	  //console.log(this);
+	  console.log(this.children().length);
+	  var lastIndex = this.children().length;
 	  if (index < 0) {
 	    index = Math.max(0, lastIndex + 1 + index);
 	  }
