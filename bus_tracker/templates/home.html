@@ -172,6 +172,7 @@ function initAll(){
 		  	var path = route[i];
 		  	var idx = "#dist_mat_" + (loc_waypoints_indices[waypoint_order[i]]); //(waypoint_order[i] + (locations.length - waypoint_order.length - 1));
 	  		console.log(idx);
+	  		$('#students').insertAt(i, $(idx).closest('.list-group-item'));
 	  		total_distance += path['distance'].value;
 	  		total_time += path['duration'].value;
 	  		$(idx).append('<div class="row">'+(total_distance/1000).toFixed(2)+' km away</div>');
