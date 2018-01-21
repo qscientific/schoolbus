@@ -156,7 +156,7 @@ function initAll(){
 		  var i;
 		  for(i=0; i<waypoint_order.length; i++){
 		  	var path = route[i];
-		  	var idx = "#dist_mat_" + loc_waypoints_indices[waypoint_order[i]] + 1; //(waypoint_order[i] + (locations.length - waypoint_order.length - 1));
+		  	var idx = "#dist_mat_" + (loc_waypoints_indices[waypoint_order[i]] + 1); //(waypoint_order[i] + (locations.length - waypoint_order.length - 1));
 	  		console.log(idx);
 	  		total_distance += path['distance'].value;
 	  		total_time += path['duration'].value;
@@ -239,7 +239,7 @@ function initAll(){
 		  var i;
 		  for(i=0; i<waypoint_order.length; i++){
 		  	var path = route[i];
-		  	var idx = "#dist_mat_" + loc_waypoints_indices[waypoint_order[i]] + 1; //(waypoint_order[i] + (locations.length - waypoint_order.length - 1));
+		  	var idx = "#dist_mat_" + (loc_waypoints_indices[waypoint_order[i]] + 1); //(waypoint_order[i] + (locations.length - waypoint_order.length - 1));
 	  		console.log(idx);
 	  		total_distance += path['distance'].value;
 	  		total_time += path['duration'].value;
