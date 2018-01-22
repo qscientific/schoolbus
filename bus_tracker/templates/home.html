@@ -48,7 +48,9 @@
 
 </ul>
 
-
+<div class="card-footer text-muted">
+    <button id="alert-accident" type="button" class="btn btn-danger btn-block">Alert an accident</button>
+</div>
 
 
 
@@ -488,6 +490,22 @@ function initAll(){
 	$('#new_day').unbind().click(function () {
 		newDay();
 	});
+
+	// ALERT ACCIDENT
+	$("#alert-accident").unbind().click(function () {
+		var ele = $(this);
+		$.post( "/alert_accident/", {}, function( data ) {
+	  	  console.log(data);
+		  if('success' in data && data['success']){
+		  	alert('You have alerted students and school about an accident...');
+				ele.prop('disabled', true);
+		  }
+		  else{
+		  	console.log('alert accident btn failed!');
+		  }
+		});
+	  			
+	  });
 
 
 }

@@ -196,3 +196,31 @@ def gonna_go_to_school(request):
 
     else:
         return JsonResponse({'success': False});
+
+@login_required
+def alert_accident(request):
+    if request.method == 'POST' and request.user.profile.user_type == Profile.DRIVER_TYPE:
+        try:
+            profiles = list(Profile.objects.all().exclude(profile=request.user.profile))
+            notifications = map(lambda x: Notification(profile=x, notification_type=Notification.ACCIDENT_TYPE), profiles)
+            # save notifications
+            map(lambda x: x.save(), notifications)
+            
+            return JsonResponse({'success': True});
+
+        except Exception as e:
+            logging.warning(e)
+            return JsonResponse({'success': False});
+
+    else:
+        return JsonResponse({'success': False});
+
+
+# @login_required
+# def check_notifications(request):
+#     if request.method == 'POST' and request.user.profile.user_type == Profile.STUDENT_TYPE:
+#         notifications = list(Notification.objects.filter(profile=request.user.profile, alerted=False));
+
+
+
+#     elif request.method == 'POST' and request.user.profile.user_type == Profile.ADMIN_TYPE:
