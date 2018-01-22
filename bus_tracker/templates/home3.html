@@ -22,6 +22,7 @@
       </div>
     </div>
   </div>
+  <ul id="alerts" class="list-group list-group-flush text-left"></ul>
 	<!-- <img class="card-img-top" style="padding:10px; background-color: rgba(0, 0, 0, 0.0);" src='{% static "bus_tracker/logo3.png" %}' alt="Card image cap"> -->
 	<div class="card-body">
 		<!-- <h4 class="card-title">School Bus Application</h4> -->
@@ -87,6 +88,33 @@
 					}
 				}
 			});
+
+			// Check for Alert
+			function checkAlert(){
+				$.post( "/check_alert/", {}, function( data ) {
+					console.log(data);
+					if('success' in data && data['success'] && 'alerts' in data){
+					  	var i, content;
+					  	for(i=0; i < data['alerts'].length; i++){
+					  		content = '<li class="alert alert-danger alert-dismissible fade show" role="alert">\n';
+					  		content += '<div class="row">';
+							content += '<div class="col-11"><strong>Alert!</strong> ' + data['alerts'][i] + '</div>';
+							content += '<div class="col-1"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>\n';
+							content += '</div>';
+							content += '</li>\n'
+							$('#alerts').prepend(content);
+					  	}
+					}
+					else{
+					  	console.log('checking alerts failed!');
+					}
+				});
+			}
+
+			setInterval(function(){
+				checkAlert();
+			}, 3000);
+	
 		});
 	</script>
 
