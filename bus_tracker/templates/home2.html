@@ -637,7 +637,7 @@ function initAll(){
 			  	for(i=0; i < data['alerts'].length; i++){
 			  		content = '<li class="alert alert-danger alert-dismissible fade show" role="alert">\n';
 			  		content += '<div class="row">';
-					content += '<div class="col-11">' + data['alerts'][i] + '</div>';
+					content += '<div class="col-11"><strong>Alert!</strong> ' + data['alerts'][i] + '</div>';
 					content += '<div class="col-1"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>\n';
 					content += '</div>';
 					content += '</li>\n'
