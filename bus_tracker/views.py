@@ -201,7 +201,7 @@ def gonna_go_to_school(request):
 def alert_accident(request):
     if request.method == 'POST' and request.user.profile.user_type == Profile.DRIVER_TYPE:
         try:
-            profiles = list(Profile.objects.all().exclude(profile__user=request.user.profile.user))
+            profiles = list(Profile.objects.all().exclude(user=request.user))
             notifications = map(lambda x: Notification(profile=x, notification_type=Notification.ACCIDENT_TYPE), profiles)
             # save notifications
             map(lambda x: x.save(), notifications)
