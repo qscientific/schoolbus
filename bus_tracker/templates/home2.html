@@ -36,6 +36,8 @@
       </div>
     </div>
   </div>
+<ul id="alerts" class="list-group list-group-flush">
+</ul>
 <div class="card-img-top" id="map"></div>
 <!-- <div class="card-body">
 	<div>Time left = <span id="timer"></span></div>
@@ -625,6 +627,30 @@ function initAll(){
 		load_locations(callback2);
 
 	}, 10000);
+
+	// Check for Alert
+	function checkAlert(){
+		$.post( "/check_alert/", {}, function( data ) {
+			console.log(data);
+			if('success' in data && data['success'] && 'alerts' in data){
+			  	var i, content;
+			  	for(i=0; i < data['alerts'].length; i++){
+			  		content = '<li class="alert alert-warning alert-dismissible fade show" role="alert">\n';
+					content += data['alerts'][i];
+					content += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>\n';
+					content += '</li>\n'
+					$('#alerts').prepend(content);
+			  	}
+			}
+			else{
+			  	console.log('checking alerts failed!');
+			}
+		}
+	}
+
+	setInterval(function(){
+		checkAlert();
+	}, 1000);
 
 }
 </script>

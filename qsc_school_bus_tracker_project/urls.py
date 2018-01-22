@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'^gonna_go_to_school/$', bus_tracker_views.gonna_go_to_school, name='gonna_go_to_school'),
     url(r'^pick_student/$', bus_tracker_views.pick_student, name='pick_student'),
     url(r'^alert_accident/$', bus_tracker_views.alert_accident, name='alert_accident'),
+    url(r'^check_alert/$', bus_tracker_views.check_alert, name='check_alert'),
 
 
     #index page

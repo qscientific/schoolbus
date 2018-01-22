@@ -216,11 +216,28 @@ def alert_accident(request):
         return JsonResponse({'success': False});
 
 
-# @login_required
-# def check_notifications(request):
-#     if request.method == 'POST' and request.user.profile.user_type == Profile.STUDENT_TYPE:
-#         notifications = list(Notification.objects.filter(profile=request.user.profile, alerted=False));
+def verbose_alert(alert):
+    if alert.notification_type == Notification.ACCIDENT_TYPE:
+        return "There was an accident on the road. Please wait for further information from the bus driver."
+    elif alert.notification_type == Notification.CLOSEBY_TYPE:
+        return "Bus is almost here. Please get ready for pickup."
+    else:
+        return "Unknown alert. Please ignore."
+
+@login_required
+def check_alert(request):
+    if request.method == 'POST':
+        try:
+            notifications = Notification.objects.filter(profile=request.user.profile, alerted=False)
+            return_data = map(lambda x: verbose_alert(x), list(notifications))
+            notifications.update(alerted=True)
+            return JsonResponse({'success': True, 'alerts': return_data});
+
+        except Exception as e:
+            logging.warning(e)
+            return JsonResponse({'success': False});
 
 
-
-#     elif request.method == 'POST' and request.user.profile.user_type == Profile.ADMIN_TYPE:
+    else:
+        logging.warning('request is not POST')
+        return JsonResponse({'success': False});
