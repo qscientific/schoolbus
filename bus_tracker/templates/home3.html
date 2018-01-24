@@ -33,6 +33,7 @@
 		  <a href='/home/' class="btn btn-primary" style="width: 100%" role="button">Today</a>
 		  <button id="next-day-btn" type="button" class="btn btn-outline-primary">Next</button>
 		</div>
+		<div id="date" class="row"></div>
 	</div>
 
 	<table class="table">
@@ -89,6 +90,21 @@
 				}
 			});
 
+			// Set Date
+			function setDate(){
+				var myDate = new Date();  
+				var dayOfMonth = myDate.getDate();
+				var days_old = $.urlParam('days_old');
+				if(!days_old){ days_old = 0; }
+				myDate.setDate(dayOfMonth - days_old);  
+				var day = myDate.getDate();
+				var month = myDate.getMonth() + 1;   // January is 0, so add 1
+				var year = myDate.getFullYear();
+				$('#date').empty().html(day + "/" + month + "/" + year);
+			}
+
+			setDate();
+
 			// Check for Alert
 			function checkAlert(){
 				$.post( "/check_alert/", {}, function( data ) {
@@ -114,7 +130,7 @@
 			setInterval(function(){
 				checkAlert();
 			}, 3000);
-	
+
 		});
 	</script>
 
