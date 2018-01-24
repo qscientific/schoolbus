@@ -230,6 +230,8 @@ def closeby_student(request):
             attendance = Attendance.objects.filter(student__user__username=data['student_username']).latest('school_date')
             attendance.closeby_alerted = True
             attendance.save()
+            notification = Notification(profile=attendance.student, notification_type=Notification.CLOSEBY_TYPE)
+            notification.save()
             return JsonResponse({'success': True});
         except Exception as e:
             logging.warning(e)
