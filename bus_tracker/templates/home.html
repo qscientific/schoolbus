@@ -346,7 +346,7 @@ function initAll(){
 			  	  console.log(data);
 				  if('success' in data && data['success']){
 				  	alert('Alerted ' + $(this).data('val') + ' that you are nearby. Please wait 10 seconds for app to refresh...');
-				  	ele.replaceWith('<button type="button" class="btn btn-success btn-block picked-btn" disabled>Picked</button>\n');
+				  	ele.replaceWith('<button type="button" class="btn btn-warning btn-block picked-btn" disabled>Nearby</button>\n');
 				  }
 				  else{
 				  	console.log('Picking student failed!');
@@ -456,7 +456,7 @@ function initAll(){
 			  	  console.log(data);
 				  if('success' in data && data['success']){
 				  	alert('Alerted ' + $(this).data('val') + ' that you are nearby. Please wait 10 seconds for app to refresh...');
-				  	ele.replaceWith('<button type="button" class="btn btn-success btn-block picked-btn" disabled>Picked</button>\n');
+				  	ele.replaceWith('<button type="button" class="btn btn-warning btn-block picked-btn" disabled>Nearby</button>\n');
 				  }
 				  else{
 				  	console.log('Picking student failed!');
