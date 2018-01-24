@@ -341,11 +341,11 @@ function initAll(){
 
 		// Closeby
 		$('.closeby-btn').unbind().click(function () {
-		    alert('Alerted ' + $(this).data('val') + ' that you are nearby. Please wait 10 seconds for app to refresh...');
 		    var ele = $(this);
 		    $.post( "/closeby_student/", {'student_username': $(this).data('val')}, function( data ) {
 			  	  console.log(data);
 				  if('success' in data && data['success']){
+				  	alert('Alerted ' + $(this).data('val') + ' that you are nearby. Please wait 10 seconds for app to refresh...');
 				  	ele.replaceWith('<button type="button" class="btn btn-success btn-block picked-btn" disabled>Picked</button>\n');
 				  }
 				  else{
@@ -451,11 +451,11 @@ function initAll(){
 
 		// Closeby
 		$('.closeby-btn').unbind().click(function () {
-		    alert('Alerted ' + $(this).data('val') + ' that you are nearby. Please wait 10 seconds for app to refresh...');
 		    var ele = $(this);
 		    $.post( "/closeby_student/", {'student_username': $(this).data('val')}, function( data ) {
 			  	  console.log(data);
 				  if('success' in data && data['success']){
+				  	alert('Alerted ' + $(this).data('val') + ' that you are nearby. Please wait 10 seconds for app to refresh...');
 				  	ele.replaceWith('<button type="button" class="btn btn-success btn-block picked-btn" disabled>Picked</button>\n');
 				  }
 				  else{

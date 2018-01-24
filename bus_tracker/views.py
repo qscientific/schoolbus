@@ -216,6 +216,29 @@ def alert_accident(request):
         return JsonResponse({'success': False});
 
 
+@login_required
+def closeby_student(request):
+    if request.method == 'POST' and request.user.profile.user_type == Profile.DRIVER_TYPE:
+        logging.warning(request.POST)
+        data = request.POST
+        if type(data) != type(dict()): # could be a QueryDict
+            data = dict(data)
+            for k in data: # data is (k, [V]), make it (k, V)
+                data[k] = data[k][0]
+
+        try:
+            attendance = Attendance.objects.filter(student__user__username=data['student_username']).latest('school_date')
+            attendance.closeby_alerted = True
+            attendance.save()
+            return JsonResponse({'success': True});
+        except Exception as e:
+            logging.warning(e)
+            return JsonResponse({'success': False});
+
+    else:
+        return JsonResponse({'success': False});
+
+
 def verbose_alert(alert):
     if alert.notification_type == Notification.ACCIDENT_TYPE:
         return "There was an accident on the road. Please wait for further information from the bus driver."
