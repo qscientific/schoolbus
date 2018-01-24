@@ -146,7 +146,8 @@
 			  	  console.log(data);
 				  if('success' in data && data['success']){
 				  	alert('All students information has been deleted from the application...');
-						ele.prop('disabled', true);
+					ele.prop('disabled', true);
+					location.reload();
 				  }
 				  else{
 				  	console.log('delete students btn failed!');
