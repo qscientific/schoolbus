@@ -84,7 +84,7 @@ def load_locations(request):
     if request.method == 'POST' and request.user.profile.user_type == Profile.DRIVER_TYPE:
         driver_location = [request.user.username, request.user.profile.geo_lat, request.user.profile.geo_long, 1]
         all_students = list(User.objects.filter(profile__user_type=Profile.STUDENT_TYPE))
-        all_locations = map(lambda (i, x): [x.username, x.profile.geo_lat, x.profile.geo_long, i + 2, x.profile.attendance_set.latest('school_date').going, x.profile.attendance_set.latest('school_date').picked_time is None], enumerate(all_students))
+        all_locations = map(lambda (i, x): [x.username, x.profile.geo_lat, x.profile.geo_long, i + 2, x.profile.attendance_set.latest('school_date').going, x.profile.attendance_set.latest('school_date').picked_time is None, x.profile.attendance_set.latest('school_date').closeby_alerted], enumerate(all_students))
         logging.warning(all_locations) 
         all_locations.insert(0, driver_location)
         try:
@@ -101,7 +101,7 @@ def load_locations(request):
             all_locations.append(driver_location)
         except: pass
         all_students = list(User.objects.filter(profile__user_type=Profile.STUDENT_TYPE))
-        all_studs_locations = map(lambda (i, x): [x.username, x.profile.geo_lat, x.profile.geo_long, i + 2, x.profile.attendance_set.latest('school_date').going, x.profile.attendance_set.latest('school_date').picked_time is None], enumerate(all_students))
+        all_studs_locations = map(lambda (i, x): [x.username, x.profile.geo_lat, x.profile.geo_long, i + 2, x.profile.attendance_set.latest('school_date').going, x.profile.attendance_set.latest('school_date').picked_time is None, x.profile.attendance_set.latest('school_date').closeby_alerted], enumerate(all_students))
         all_locations.extend(all_studs_locations)
         try:
             school = User.objects.get(profile__user_type=Profile.ADMIN_TYPE)

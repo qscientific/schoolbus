@@ -49,10 +49,11 @@ def save_user_profile(sender, instance, **kwargs):
 
 
 class Attendance(models.Model):
-	school_date = models.DateTimeField(auto_now_add=True)
-	going = models.BooleanField(default=True)
-	picked_time = models.DateTimeField(blank=True, null=True)
-	student = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    school_date = models.DateTimeField(auto_now_add=True)
+    going = models.BooleanField(default=True)
+    picked_time = models.DateTimeField(blank=True, null=True)
+    closeby_alerted = models.BooleanField(default=False)
+    student = models.ForeignKey(Profile, on_delete=models.CASCADE)
 
 
 
