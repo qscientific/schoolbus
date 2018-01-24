@@ -266,3 +266,15 @@ def check_alert(request):
     else:
         logging.warning('request is not POST')
         return JsonResponse({'success': False});
+
+@login_required
+def delete_students(request):
+    if request.method == 'POST' and request.user.profile.user_type == Profile.ADMIN_TYPE:
+        try: 
+            User.objects.filter(profile__user_type=Profile.STUDENT_TYPE).delete()
+            return JsonResponse({'success': True});
+        except Exception as e:
+            logging.warning(e)
+            return JsonResponse({'success': False});
+    else:
+        return JsonResponse({'success': False});

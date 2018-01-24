@@ -60,6 +60,10 @@
 	  </tbody>
 	</table>
 
+	<div class="card-footer text-muted">
+    	<button id="delete-students" type="button" class="btn btn-danger btn-block">Delete all students</button>
+	</div>
+
 	<script type="text/javascript">
 
 		$( document ).ready(function() {
@@ -134,6 +138,22 @@
 			setInterval(function(){
 				checkAlert();
 			}, 3000);
+
+			// DELETE STUDENTS
+			$("#delete_students").unbind().click(function () {
+				var ele = $(this);
+				$.post( "/delete_students/", {}, function( data ) {
+			  	  console.log(data);
+				  if('success' in data && data['success']){
+				  	alert('All students information has been deleted from the application...');
+						ele.prop('disabled', true);
+				  }
+				  else{
+				  	console.log('delete students btn failed!');
+				  }
+				});
+			  			
+			  });
 
 		});
 	</script>

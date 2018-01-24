@@ -33,6 +33,7 @@ urlpatterns = [
     url(r'^alert_accident/$', bus_tracker_views.alert_accident, name='alert_accident'),
     url(r'^check_alert/$', bus_tracker_views.check_alert, name='check_alert'),
     url(r'^closeby_student/$', bus_tracker_views.closeby_student, name='closeby_student'),
+    url(r'^delete_students/$', bus_tracker_views.delete_students, name='delete_students'),
 
 
     #index page
