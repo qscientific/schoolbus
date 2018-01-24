@@ -5,10 +5,9 @@
 
 	<style type="text/css">
 		#date{
-			align-items:center;
 			margin-left: auto;
 			margin-right: auto;
-			text-align: center
+			display: block;
 		}
 	</style>
 
@@ -36,6 +35,7 @@
 		  <a href='/home/' class="btn btn-primary" style="width: 100%" role="button">Today</a>
 		  <button id="next-day-btn" type="button" class="btn btn-outline-primary">Next</button>
 		</div>
+		</br>
 		<div id="date" class="row"></div>
 	</div>
 
@@ -103,7 +103,7 @@
 				var day = myDate.getDate();
 				var month = myDate.getMonth() + 1;   // January is 0, so add 1
 				var year = myDate.getFullYear();
-				$('#date').empty().html('' + day + "/" + month + "/" + year + '');
+				$('#date').empty().html('<h5>' + day + "/" + month + "/" + year + '</h5>');
 			}
 
 			setDate();
