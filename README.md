@@ -1,6 +1,6 @@
 # School Bus Application
 
-One Paragraph of project description goes here
+This is a complete demo of a system for automating the pickup and drop off of school students similar to Uber. The bus driver will see the locations of all the students that he/she needs to pickup on a map and will see the optimum route to pickup all students and then take them to the school. A student side application will allow him/her to cancel pickup, in which case the bus will update the travel route to the new optimum one.
 
 [App Demo](https://sleepy-everglades-39783.herokuapp.com/)
 
@@ -10,53 +10,44 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+You need to make sure to have the following installed before setting up this app demo:
 
-```
-Give examples
-```
+* [Python](http://install.python-guide.org)
+* [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli)
+* [Postgres](https://devcenter.heroku.com/articles/heroku-postgresql#local-setup)
+* [Pip](https://pip.pypa.io/en/stable/installing/)
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
+In order to install and run this application demo on your local machine, kindly perform the following steps:
 
-Say what the step will be
+```sh
+$ git clone git@github.com:heroku/python-getting-started.git
+$ cd python-getting-started
 
-```
-Give the example
-```
+$ pipenv install
 
-And repeat
+$ createdb python_getting_started
 
-```
-until finished
-```
+$ python manage.py migrate
+$ python manage.py collectstatic
 
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
+$ heroku local
 ```
 
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
+Your app should now be running on [localhost:5000](http://localhost:5000/).
 
 ## Deployment
 
-Add additional notes about how to deploy this on a live system
+These are the steps to deply this application on heroku:
+
+```sh
+$ heroku create
+$ git push heroku master
+
+$ heroku run python manage.py migrate
+$ heroku open
+```
 
 ## Built With
 
@@ -68,15 +59,17 @@ Add additional notes about how to deploy this on a live system
 
 Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
 
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
-
 ## Authors
 
 * **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+
+## Documentation
+
+For more information about using Python on Heroku, see these Dev Center articles:
+
+- [Python on Heroku](https://devcenter.heroku.com/categories/python)
 
 ## License
 
